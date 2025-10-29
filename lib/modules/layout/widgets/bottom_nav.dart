@@ -4,6 +4,7 @@ import 'package:fluffy/modules/dashoboard/home.dart';
 import 'package:fluffy/modules/layout/more_menu.dart';
 import 'package:fluffy/modules/orders/orders.dart';
 import 'package:fluffy/modules/service/services.dart';
+import 'package:fluffy/modules/settings/profile_settings.dart';
 import 'package:flutter/material.dart';
 
 
@@ -22,7 +23,7 @@ class _BottomNavState extends State<BottomNav> {
     HomeScreen(),
     OrdersScreen(),
     ClientScreen(),
-    MoreScreen(),
+    ProfileSettings(),
   ];
 
   @override

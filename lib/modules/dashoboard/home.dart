@@ -1,6 +1,7 @@
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/booking/booking_requests.dart';
 import 'package:fluffy/modules/dashoboard/widget/daily_shanpshot_card.dart';
+import 'package:fluffy/modules/dashoboard/widget/financial_overview.dart';
 import 'package:fluffy/modules/dashoboard/widget/revenue_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -152,36 +153,46 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              Card(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const FinancialOverview(),
+                    ),
+                  );
+                },
+                child: Card(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: const [
-                      SnapshotItem(
-                        icon: Icons.people,
-                        label: "Total Clients",
-                        value: "12",
-                      ),
-                      SnapshotItem(
-                        icon: Icons.person_outline,
-                        label: "Avg Agents/Day",
-                        value: "8",
-                      ),
-                      SnapshotItem(
-                        icon: Icons.currency_rupee,
-                        label: "Total Revenue",
-                        value: "₹1,15,000",
-                      ),
-                    ],
+                  elevation: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: const [
+                        SnapshotItem(
+                          icon: Icons.people,
+                          label: "Total Clients",
+                          value: "12",
+                        ),
+                        SnapshotItem(
+                          icon: Icons.person_outline,
+                          label: "Avg Agents/Day",
+                          value: "8",
+                        ),
+                        SnapshotItem(
+                          icon: Icons.currency_rupee,
+                          label: "Total Revenue",
+                          value: "₹1,15,000",
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

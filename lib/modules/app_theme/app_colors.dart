@@ -9,6 +9,7 @@ class AppColors {
   static const Color textPrimary = Colors.black87;
   static const Color textSecondary = Colors.grey;
   static const Color navInactive = Colors.grey;
+  static const Color appBarColor = Color(0xffC3A2FF);
 }
 
 Future<void> initializeAppColors() async {
