@@ -73,6 +73,7 @@ flutter:
   assets:
     - .env
     - assets/fluffy.jpeg
+    - assets/pet.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
