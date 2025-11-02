@@ -1,11 +1,13 @@
 import 'package:fluffy/modules/auth/otp_screen.dart';
 import 'package:fluffy/modules/auth/provider/register_provider.dart';
+import 'package:fluffy/modules/auth/register_customer_screens/pet_name_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../app_theme/app_colors.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  final String registerType;
+  const RegisterScreen({super.key, required this.registerType});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -16,8 +18,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _agreeToTerms = false;
 
   @override
+  void initState() {
+    super.initState();
+    print("role ${widget.registerType}");
+  }
+
+  @override
   Widget build(BuildContext context) {
     final registerProvider = Provider.of<RegisterProvider>(context);
+
+    //registerProvider.setRole(widget.registerType);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -140,36 +150,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed:
-                          _agreeToTerms
-                              ? () async {
-                                if (_formKey.currentState!.validate()) {
-                                  bool success =
-                                      await registerProvider.register();
-
-                                  if (success) {
-                                    // Navigate to OTP screen
-                                    Navigator.push(
+                      onPressed:(){
+                         Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder:
-                                            (_) => const OtpVerificationPage(),
+                                            (_) => PetNameScreen()
                                       ),
                                     );
-                                   
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Registration failed. Please try again.',
-                                        ),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }
-                               }
-                              }
-                              : null,
+                      },
+                          // _agreeToTerms
+                          //     ? () async {
+                          //       if (_formKey.currentState!.validate()) {
+                          //         bool success =
+                          //             await registerProvider.register(widget.registerType);
+
+                          //         if (success) {
+                          //           // Navigate to OTP screen
+                          //           Navigator.push(
+                          //             context,
+                          //             MaterialPageRoute(
+                          //               builder:
+                          //                   (_) => OtpVerificationPage(
+                          //                     registerType: widget.registerType,
+                          //                   ),
+                          //             ),
+                          //           );
+                          //         } else {
+                          //           ScaffoldMessenger.of(context).showSnackBar(
+                          //             const SnackBar(
+                          //               content: Text(
+                          //                 'Registration failed. Please try again.',
+                          //               ),
+                          //               backgroundColor: Colors.red,
+                          //             ),
+                          //           );
+                          //         }
+                          //       }
+                          //     }
+                          //     : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         disabledBackgroundColor: Colors.grey[300],

@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BusinessLoginScreen extends StatefulWidget {
-  const BusinessLoginScreen({super.key});
+  final String businessOwnerLogin;
+  const BusinessLoginScreen({super.key, required this.businessOwnerLogin});
 
   @override
   State<BusinessLoginScreen> createState() => _BusinessLoginScreenState();
@@ -30,9 +31,9 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      
+
       body: SafeArea(
-        child:  Center(
+        child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Container(
@@ -219,7 +220,10 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const RegisterScreen(),
+                                builder:
+                                    (_) => RegisterScreen(
+                                      registerType: widget.businessOwnerLogin,
+                                    ),
                               ),
                             );
                           },

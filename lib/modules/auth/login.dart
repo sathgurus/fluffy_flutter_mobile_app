@@ -92,7 +92,10 @@ class _LoginTabsScreenState extends State<LoginTabsScreen>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: const [BusinessLoginScreen(), CustomerLoginScreen()],
+              children: const [
+                BusinessLoginScreen(businessOwnerLogin: "business_owner"),
+                CustomerLoginScreen(customerLogin: "end_user"),
+              ],
             ),
           ),
         ],

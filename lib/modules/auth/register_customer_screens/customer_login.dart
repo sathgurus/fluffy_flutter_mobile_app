@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CustomerLoginScreen extends StatefulWidget {
-  const CustomerLoginScreen({super.key});
+  final String customerLogin;
+  const CustomerLoginScreen({super.key, required this.customerLogin});
 
   @override
   State<CustomerLoginScreen> createState() => _CustomerLoginScreenState();
@@ -217,7 +218,10 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const RegisterScreen(),
+                                builder:
+                                    (_) => RegisterScreen(
+                                      registerType: widget.customerLogin,
+                                    ),
                               ),
                             );
                           },

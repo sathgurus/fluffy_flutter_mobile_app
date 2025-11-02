@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'package:fluffy/modules/auth/provider/register_provider.dart';
 import 'package:fluffy/modules/auth/register_business_screens/add_business.dart';
+import 'package:fluffy/modules/auth/register_customer_screens/pet_name_screen.dart';
+import 'package:fluffy/modules/auth/register_customer_screens/pet_type_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class OtpVerificationPage extends StatefulWidget {
-  const OtpVerificationPage({super.key});
+  final String registerType;
+  const OtpVerificationPage({super.key, required this.registerType});
 
   @override
   State<OtpVerificationPage> createState() => _OtpVerificationPageState();
@@ -74,12 +77,21 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                           } else if (key == 'Done') {
                             bool success = await registerProvider.verifyOtp();
                             if (success) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const AddBusinessScreen(),
-                                ),
-                              );
+                              if (widget.registerType == "business_owner") {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const AddBusinessScreen(),
+                                  ),
+                                );
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const PetNameScreen(),
+                                  ),
+                                );
+                              }
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text("Invalid OTP")),

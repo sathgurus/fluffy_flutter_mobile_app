@@ -4,13 +4,13 @@ import 'package:fluffy/modules/repositorey/common_api_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 class RegisterProvider with ChangeNotifier {
   String _name = '';
   String _phone = '';
   String _email = '';
   String _password = '';
   String _confirmPassword = '';
+  String _role = '';
   String _otp = '';
   String? _userId;
   String? _token;
@@ -25,6 +25,7 @@ class RegisterProvider with ChangeNotifier {
   String get email => _email;
   String get password => _password;
   String get confirmPassword => _confirmPassword;
+  String get role => _role;
   String get otp => _otp;
   String? get userId => _userId;
   String? get token => _token;
@@ -34,6 +35,12 @@ class RegisterProvider with ChangeNotifier {
   Map<String, dynamic>? get userDetails => _userDetails;
 
   // Setters
+
+  void setRole(String value) {
+    _role = value;
+    notifyListeners();
+  }
+
   void setName(String value) {
     _name = value;
     notifyListeners();
@@ -111,7 +118,7 @@ class RegisterProvider with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<bool> register() async {
+  Future<bool> register(String registerType) async {
     if (_password != _confirmPassword) {
       debugPrint("Passwords do not match");
       return false;
@@ -131,7 +138,7 @@ class RegisterProvider with ChangeNotifier {
         'email': _email,
         'password': _password,
         'confirmPassword': _confirmPassword,
-        'role': "business_owner",
+        'role': registerType,
         'termsAccepted': true,
       });
 
@@ -143,7 +150,7 @@ class RegisterProvider with ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         _userId = response.data['userId'];
         _isRegistered = true;
-       // await saveUserData(_userId!);
+        // await saveUserData(_userId!);
         debugPrint('✅ Registration Successful: ${response.data}');
         return true;
       } else {
@@ -184,7 +191,7 @@ class RegisterProvider with ChangeNotifier {
         _userDetails =
             response.data['user']; // assuming API returns a `user` object
         _token = response.data['token'];
-       // await saveUserData(_userId!, token: _token, userDetails: _userDetails);
+        // await saveUserData(_userId!, token: _token, userDetails: _userDetails);
 
         notifyListeners();
         debugPrint('✅ OTP verified successfully');
@@ -208,6 +215,7 @@ class RegisterProvider with ChangeNotifier {
     _email = '';
     _password = '';
     _confirmPassword = '';
+    _role = '';
     _otp = '';
     _userId = null;
     _isRegistered = false;

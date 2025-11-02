@@ -1,4 +1,6 @@
+import 'package:fluffy/modules/auth/login.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileSettings extends StatefulWidget {
   const ProfileSettings({super.key});
@@ -130,7 +132,18 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                       width: double.infinity,
                       height: 48,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          final prefs = await SharedPreferences.getInstance();
+
+                          await prefs.clear();
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => LoginTabsScreen(),
+                            ),
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xffF8F8F8),
                           foregroundColor: Colors.red,
