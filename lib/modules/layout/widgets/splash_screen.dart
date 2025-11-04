@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:fluffy/core/NavigationService.dart';
 import 'package:fluffy/modules/auth/login.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/layout/widgets/bottom_nav.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -19,31 +21,30 @@ class _SplashScreenState extends State<SplashScreen> {
     _checkUser();
   }
 
+  String firstRouts = '';
   Future<void> _checkUser() async {
-    // Get provider
     final authProvider = Provider.of<LoginProvider>(context, listen: false);
-
-    // Load persisted user data (from SharedPreferences)
     await authProvider.loadUserData();
-
-    // Wait for splash animation (optional)
     await Future.delayed(const Duration(seconds: 2));
 
-    // Navigate based on login state
-    if (!mounted) return;
-
-    print("user details ${authProvider.userDetails}");
+    final nav = NavigationService();
 
     if (authProvider.token != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => BottomNav()), // home/dashboard
-      );
+      nav.pushReplacementPage(const BottomNav());
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginTabsScreen()),
-      );
+      if (dotenv.env['BUILD'] == 'admin') {
+        nav.pushReplacementNamed('/adminLogin');
+      } else {
+        nav.pushReplacementNamed('/login');
+      }
+    }
+  }
+
+  initialRoutes() {
+    if (dotenv.env['BUILD']! == 'admin') {
+      firstRouts = '/adminLogin';
+    } else {
+      firstRouts = '/';
     }
   }
 

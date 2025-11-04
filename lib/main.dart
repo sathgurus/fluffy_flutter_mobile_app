@@ -9,6 +9,11 @@ import 'package:fluffy/modules/auth/provider/register_provider.dart';
 import 'package:fluffy/modules/layout/widgets/route_generator.dart';
 import 'package:fluffy/modules/layout/widgets/splash_screen.dart';
 
+import 'adminPannel/adminLogin/admin_login.dart';
+import 'core/NavigationService.dart';
+import 'modules/auth/login.dart';
+import 'modules/layout/widgets/bottom_nav.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -52,13 +57,12 @@ class _FluffyAppState extends State<FluffyApp> with WidgetsBindingObserver {
       providers: [
         ChangeNotifierProvider(create: (_) => RegisterProvider()),
         ChangeNotifierProvider(create: (_) => LoginProvider()),
-        ChangeNotifierProvider(create: (_)=> ServiceProvider())
+        ChangeNotifierProvider(create: (_) => ServiceProvider()),
         // 👇 Add other providers here if needed later
       ],
       child: FutureBuilder(
         future: initializeAppColors(),
         builder: (context, snapshot) {
-          // While waiting for initialization
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const MaterialApp(
               home: Scaffold(body: Center(child: CircularProgressIndicator())),
@@ -74,9 +78,15 @@ class _FluffyAppState extends State<FluffyApp> with WidgetsBindingObserver {
               scaffoldBackgroundColor: AppColors.background,
               colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
             ),
-            navigatorKey: navigatorKey,
+            navigatorKey: NavigationService().navigatorKey,
+            routes: {
+              '/': (context) => const SplashScreen(),
+              '/login': (context) => const LoginTabsScreen(),
+              '/home': (context) => const BottomNav(),
+              '/adminLogin': (context) => const AdminLogin(),
+              // 👇 Add other Routers here if needed later
+            },
             onGenerateRoute: RouteGenerator.generateRoute,
-            home: const SplashScreen(),
           );
         },
       ),
