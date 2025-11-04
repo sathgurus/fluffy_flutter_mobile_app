@@ -1,4 +1,5 @@
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
+import 'package:fluffy/modules/service/provider/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -51,6 +52,7 @@ class _FluffyAppState extends State<FluffyApp> with WidgetsBindingObserver {
       providers: [
         ChangeNotifierProvider(create: (_) => RegisterProvider()),
         ChangeNotifierProvider(create: (_) => LoginProvider()),
+        ChangeNotifierProvider(create: (_)=> ServiceProvider())
         // 👇 Add other providers here if needed later
       ],
       child: FutureBuilder(
