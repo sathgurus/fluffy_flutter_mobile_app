@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fluffy/modules/repositorey/common_api_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterProvider with ChangeNotifier {
   String _name = '';
@@ -91,38 +92,40 @@ class RegisterProvider with ChangeNotifier {
     }
   }
 
-  // Future<void> saveUserData(
-  //   String userId, {
-  //   String? token,
-  //   Map<String, dynamic>? userDetails,
-  // }) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString('userId', userId);
-  //   if (token != null) await prefs.setString('token', token);
-  //   if (userDetails != null) {
-  //     await prefs.setString('userDetails', jsonEncode(userDetails));
-  //   }
-  // }
+  Future<void> saveUserData(
+    String userId, {
+    String? token,
+    Map<String, dynamic>? userDetails,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId);
+    if (token != null) await prefs.setString('token', token);
+    if (userDetails != null) {
+      await prefs.setString('userDetails', jsonEncode(userDetails));
+    }
+  }
 
-  // // Load user ID and token
-  // Future<void> loadUserData() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   _userId = prefs.getString('userId');
-  //   _token = prefs.getString('token');
+  // Load user ID and token
+  Future<void> loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _userId = prefs.getString('userId');
+    _token = prefs.getString('token');
 
-  //   final userJson = prefs.getString('userDetails');
-  //   if (userJson != null) {
-  //     _userDetails = jsonDecode(userJson);
-  //   }
+    final userJson = prefs.getString('userDetails');
+    if (userJson != null) {
+      _userDetails = jsonDecode(userJson);
+    }
 
-  //   notifyListeners();
-  // }
+    notifyListeners();
+  }
 
   Future<bool> register(String registerType) async {
     if (_password != _confirmPassword) {
       debugPrint("Passwords do not match");
       return false;
     }
+
+    print("called $registerType");
 
     _isLoading = true;
     notifyListeners();
@@ -148,9 +151,15 @@ class RegisterProvider with ChangeNotifier {
       debugPrint("response $response");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        _userId = response.data['userId'];
+        _userDetails =
+            response.data['user']; // assuming API returns a `user` object
+        _token = response.data['token'];
         _isRegistered = true;
-        // await saveUserData(_userId!);
+        await saveUserData(
+          _userDetails?['id'],
+          token: _token,
+          userDetails: _userDetails,
+        );
         debugPrint('✅ Registration Successful: ${response.data}');
         return true;
       } else {
@@ -158,6 +167,7 @@ class RegisterProvider with ChangeNotifier {
         return false;
       }
     } catch (e) {
+      print(e);
       _isLoading = false;
       notifyListeners();
       debugPrint('🚨 Register Error: $e');

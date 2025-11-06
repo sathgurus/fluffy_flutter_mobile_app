@@ -1,6 +1,9 @@
+import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/auth/register_business_screens/add_location.dart';
+import 'package:fluffy/modules/auth/register_business_screens/model/business_model.dart';
+import 'package:fluffy/modules/auth/register_business_screens/provider/business_provider.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 
 class AddBusinessScreen extends StatefulWidget {
   const AddBusinessScreen({super.key});
@@ -11,13 +14,16 @@ class AddBusinessScreen extends StatefulWidget {
 
 class _AddBusinessScreenState extends State<AddBusinessScreen> {
   final TextEditingController businessNameController = TextEditingController();
-  final TextEditingController businessDescriptionController = TextEditingController();
+  final TextEditingController businessDescriptionController =
+      TextEditingController();
   final TextEditingController businessPhoneController = TextEditingController();
-  final TextEditingController alternatePhoneController = TextEditingController();
+  final TextEditingController alternatePhoneController =
+      TextEditingController();
   final TextEditingController businessEmailController = TextEditingController();
-  final TextEditingController businessWebsiteController = TextEditingController();
+  final TextEditingController businessWebsiteController =
+      TextEditingController();
 
-   @override
+  @override
   void dispose() {
     businessNameController.dispose();
     businessDescriptionController.dispose();
@@ -30,6 +36,8 @@ class _AddBusinessScreenState extends State<AddBusinessScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final businessProvider = Provider.of<BusinessProvider>(context);
+    final authProvider = Provider.of<LoginProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text('Pet Care'),
@@ -57,7 +65,10 @@ class _AddBusinessScreenState extends State<AddBusinessScreen> {
               backgroundColor: Colors.grey.shade300,
             ),
             SizedBox(height: 24),
-            Text('BUSINESS DETAILS', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'BUSINESS DETAILS',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 12),
 
             TextField(
@@ -79,7 +90,10 @@ class _AddBusinessScreenState extends State<AddBusinessScreen> {
             ),
 
             SizedBox(height: 24),
-            Text('CONTACT DETAILS', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'CONTACT DETAILS',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 12),
 
             TextField(
@@ -126,15 +140,40 @@ class _AddBusinessScreenState extends State<AddBusinessScreen> {
                   backgroundColor: Colors.green,
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24)
+                    borderRadius: BorderRadius.circular(24),
                   ),
                 ),
-                onPressed: () {
-                   Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AddLocation(),
-                            ),);
+                onPressed: () async {
+                  if (businessNameController.text.isEmpty ||
+                      businessPhoneController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Required fields missing")),
+                    );
+                    return;
+                  }
+
+                  BusinessModel business = BusinessModel(
+                    businessName: businessNameController.text,
+                    businessDescription: businessDescriptionController.text,
+                    businessPhone: businessPhoneController.text,
+                    alternatePhone: alternatePhoneController.text,
+                    businessEmail: businessEmailController.text,
+                    businessWebsite: businessWebsiteController.text,
+                    ownerId: "690cea0ca953fbe2bb4e29d9",
+                  );
+
+                  bool success = await businessProvider.addBusiness(business);
+
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Business Added Successfully ✅")),
+                    );
+                    Navigator.pop(context);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Failed to Add Business ❌")),
+                    );
+                  }
                 },
                 child: Text('Continue', style: TextStyle(fontSize: 16)),
               ),

@@ -1,6 +1,7 @@
 import 'package:fluffy/modules/auth/register_business_screens/add_pesonal_details.dart';
+import 'package:fluffy/modules/service/provider/service_provider.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 
 class AddServices extends StatefulWidget {
   const AddServices({super.key});
@@ -20,6 +21,17 @@ class _AddServicesState extends State<AddServices> {
     {'name': 'Grooming', 'price': '₹1600.00'},
     {'name': 'Training Classes', 'price': '₹6000.00'},
   ];
+
+  
+  @override
+  void initState() {
+    super.initState();
+
+    // API Call only once when screen is opened
+    Future.microtask(() {
+      Provider.of<ServiceProvider>(context, listen: false).fetchAllServices();
+    });
+  }
 
   void addService() {
     String name = serviceNameController.text.trim();

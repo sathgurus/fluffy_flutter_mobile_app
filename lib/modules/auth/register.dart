@@ -150,45 +150,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed:(){
-                         Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (_) => PetNameScreen()
-                                      ),
-                                    );
-                      },
-                          // _agreeToTerms
-                          //     ? () async {
-                          //       if (_formKey.currentState!.validate()) {
-                          //         bool success =
-                          //             await registerProvider.register(widget.registerType);
+                      onPressed: () async {
+                        if (_agreeToTerms) {
+                          if (_formKey.currentState!.validate()) {
+                            bool success = await registerProvider.register(
+                              widget.registerType,
+                            );
 
-                          //         if (success) {
-                          //           // Navigate to OTP screen
-                          //           Navigator.push(
-                          //             context,
-                          //             MaterialPageRoute(
-                          //               builder:
-                          //                   (_) => OtpVerificationPage(
-                          //                     registerType: widget.registerType,
-                          //                   ),
-                          //             ),
-                          //           );
-                          //         } else {
-                          //           ScaffoldMessenger.of(context).showSnackBar(
-                          //             const SnackBar(
-                          //               content: Text(
-                          //                 'Registration failed. Please try again.',
-                          //               ),
-                          //               backgroundColor: Colors.red,
-                          //             ),
-                          //           );
-                          //         }
-                          //       }
-                          //     }
-                          //     : null,
+                            if (success) {
+                              // Navigate to OTP screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => OtpVerificationPage(
+                                        registerType: widget.registerType,
+                                      ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Registration failed. Please try again.',
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        }
+                      },
+
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         disabledBackgroundColor: Colors.grey[300],

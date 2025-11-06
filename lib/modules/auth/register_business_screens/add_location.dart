@@ -1,7 +1,10 @@
-
-import 'package:fluffy/modules/auth/register_business_screens/add_service.dart';
+import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
-
+import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
+import 'package:fluffy/modules/auth/register_business_screens/model/location_model.dart';
+import 'package:fluffy/modules/auth/register_business_screens/provider/location_provider.dart';
+import 'package:fluffy/modules/auth/register_business_screens/add_service.dart';
 
 class AddLocation extends StatefulWidget {
   const AddLocation({super.key});
@@ -12,6 +15,67 @@ class AddLocation extends StatefulWidget {
 
 class _AddLocationState extends State<AddLocation> {
   final TextEditingController addressController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _checkUser();
+  }
+
+  Future<void> _checkUser() async {
+    final authProvider = Provider.of<LoginProvider>(context, listen: false);
+    await authProvider.loadUserData();
+  }
+
+  Future<void> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please turn on location service")),
+      );
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) return;
+    }
+
+    if (permission == LocationPermission.deniedForever) return;
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    print("📍 Latitude: ${position.latitude}");
+    print("📍 Longitude: ${position.longitude}");
+
+    final provider = Provider.of<LocationProvider>(context, listen: false);
+    final authProvider = Provider.of<LoginProvider>(context, listen: false);
+    await authProvider.loadUserData();
+
+    await provider.updateLocation(
+      LocationModel(
+        businessOwnerId: "690cea0ca953fbe2bb4e29d9",
+        latitude: position.latitude,
+        longitude: position.longitude,
+        address: addressController.text,
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("✅ Location Added Successfully"),
+        backgroundColor: Colors.green,
+      ),
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AddServices()),
+    );
+  }
 
   @override
   void dispose() {
@@ -21,9 +85,11 @@ class _AddLocationState extends State<AddLocation> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<LocationProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pet Care'),
+        title: const Text("Pet Care"),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -36,91 +102,24 @@ class _AddLocationState extends State<AddLocation> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Add Your Business (Step 2 of 4)',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-            LinearProgressIndicator(
-              value: 0.5,
-              minHeight: 5,
-              color: Colors.blue,
-              backgroundColor: Colors.grey.shade300,
-            ),
-            SizedBox(height: 24),
-
-            Text(
-              'Pin Your Shop Location',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 6),
-            Text(
-              'Show customers where to find you',
-              style: TextStyle(color: Colors.grey[700]),
-            ),
-            SizedBox(height: 18),
-
+            SizedBox(height: 10),
             TextField(
               controller: addressController,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search),
-                hintText: 'Search for address',
+                hintText: "Enter address",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 0,
-                  horizontal: 10,
-                ),
               ),
             ),
-            SizedBox(height: 18),
 
-            Container(
-              height: 300,
-              decoration: BoxDecoration(
-                color: Colors.blueGrey[50],
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: Center(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Icon(Icons.map, size: 240, color: Colors.blue[100]),
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.blue, width: 2),
-                        color: Colors.blue.withOpacity(0.1),
-                      ),
-                    ),
-                    Icon(Icons.location_on, size: 32, color: Colors.blue),
-                    Positioned(
-                      bottom: 10,
-                      right: 10,
-                      child: Icon(
-                        Icons.navigation,
-                        color: Colors.redAccent,
-                        size: 32,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 12),
-            Text(
-              'Drag the pin to your branch zone.',
-              style: TextStyle(fontSize: 15, color: Colors.grey[700]),
-            ),
-            SizedBox(height: 32),
+            SizedBox(height: 30),
 
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
+                onPressed: provider.loading ? null : getCurrentLocation,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   padding: EdgeInsets.symmetric(vertical: 16),
@@ -128,13 +127,10 @@ class _AddLocationState extends State<AddLocation> {
                     borderRadius: BorderRadius.circular(24),
                   ),
                 ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AddServices()),
-                  );
-                },
-                child: Text('Continue', style: TextStyle(fontSize: 16)),
+                child:
+                    provider.loading
+                        ? CircularProgressIndicator(color: Colors.white)
+                        : Text("Ping Location", style: TextStyle(fontSize: 16)),
               ),
             ),
           ],
