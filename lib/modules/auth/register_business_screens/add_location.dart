@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -27,54 +28,63 @@ class _AddLocationState extends State<AddLocation> {
   }
 
   Future<void> getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+    try {
+      // bool serviceEnabled;
+      // LocationPermission permission;
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please turn on location service")),
+      // serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      // if (!serviceEnabled) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(content: Text("Please turn on location service")),
+      //   );
+      //   return;
+      // }
+
+      // permission = await Geolocator.checkPermission();
+      // if (permission == LocationPermission.denied) {
+      //   permission = await Geolocator.requestPermission();
+      //   if (permission == LocationPermission.denied) return;
+      // }
+
+      // if (permission == LocationPermission.deniedForever) return;
+
+      // Position position = await Geolocator.getCurrentPosition(
+      //   desiredAccuracy: LocationAccuracy.high,
+      // );
+
+      // print("📍 Latitude: ${position.latitude}");
+      // print("📍 Longitude: ${position.longitude}");
+
+      // final provider = Provider.of<LocationProvider>(context, listen: false);
+      // final authProvider = Provider.of<LoginProvider>(context, listen: false);
+      // await authProvider.loadUserData();
+
+      // await provider.updateLocation(
+      //   LocationModel(
+      //     businessOwnerId: "690cea0ca953fbe2bb4e29d9",
+      //     latitude: position.latitude,
+      //     longitude: position.longitude,
+      //     address: addressController.text,
+      //   ),
+      // );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text("✅ Location Added Successfully"),
+      //     backgroundColor: Colors.green,
+      //   ),
+      // );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const AddServices()),
       );
-      return;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Location pinned failed. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) return;
-    }
-
-    if (permission == LocationPermission.deniedForever) return;
-
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-
-    print("📍 Latitude: ${position.latitude}");
-    print("📍 Longitude: ${position.longitude}");
-
-    final provider = Provider.of<LocationProvider>(context, listen: false);
-    final authProvider = Provider.of<LoginProvider>(context, listen: false);
-    await authProvider.loadUserData();
-
-    await provider.updateLocation(
-      LocationModel(
-        businessOwnerId: "690cea0ca953fbe2bb4e29d9",
-        latitude: position.latitude,
-        longitude: position.longitude,
-        address: addressController.text,
-      ),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("✅ Location Added Successfully"),
-        backgroundColor: Colors.green,
-      ),
-    );
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const AddServices()),
-    );
   }
 
   @override
@@ -121,7 +131,7 @@ class _AddLocationState extends State<AddLocation> {
               child: ElevatedButton(
                 onPressed: provider.loading ? null : getCurrentLocation,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppColors.primary,
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(24),
@@ -130,7 +140,7 @@ class _AddLocationState extends State<AddLocation> {
                 child:
                     provider.loading
                         ? CircularProgressIndicator(color: Colors.white)
-                        : Text("Ping Location", style: TextStyle(fontSize: 16)),
+                        : Text("Ping Location", style: TextStyle(fontSize: 16,color: Colors.white)),
               ),
             ),
           ],

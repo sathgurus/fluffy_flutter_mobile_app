@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:fluffy/modules/auth/provider/register_provider.dart';
-import 'package:fluffy/modules/auth/register_business_screens/add_business.dart';
+import 'package:fluffy/modules/auth/register_business_screens/business_verification.dart';
 import 'package:fluffy/modules/auth/register_customer_screens/pet_name_screen.dart';
 import 'package:fluffy/modules/auth/register_customer_screens/pet_type_screen.dart';
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   final String registerType;
@@ -17,11 +19,23 @@ class OtpVerificationPage extends StatefulWidget {
 class _OtpVerificationPageState extends State<OtpVerificationPage> {
   int seconds = 30;
   Timer? timer;
+  String? userId;
 
   @override
   void initState() {
     super.initState();
     startTimer();
+    loadUserData();
+  }
+
+  void loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      userId = prefs.getString("userId");
+    });
+
+    print("User ID: $userId");
   }
 
   void startTimer() {
@@ -44,7 +58,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
-        border: Border.all(color: const Color(0xffF4B3B3), width: 1.5),
+        border: Border.all(color: AppColors.primary, width: 1.5),
       ),
       child: Text(
         value,
@@ -75,13 +89,23 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                           if (key == '←') {
                             registerProvider.removeLastOtp();
                           } else if (key == 'Done') {
-                            bool success = await registerProvider.verifyOtp();
+                            bool success = await registerProvider.verifyOtp(
+                              userId,
+                            );
                             if (success) {
-                              if (widget.registerType == "business_owner") {
+                              if (widget.registerType == "owner") {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const AddBusinessScreen(),
+                                    builder: (_) => const BusinessVerification(),
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'OTP verification successfully.',
+                                    ),
+                                    backgroundColor: Colors.green,
                                   ),
                                 );
                               } else {
@@ -204,7 +228,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                                 style: OutlinedButton.styleFrom(
                                   minimumSize: const Size(double.infinity, 50),
                                   side: const BorderSide(
-                                    color: Color(0xffF79B9B),
+                                    color: AppColors.primary,
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
@@ -213,7 +237,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                                 child: const Text(
                                   "Resend OTP",
                                   style: TextStyle(
-                                    color: Color(0xffF79B9B),
+                                    color: AppColors.primary,
                                     fontSize: 16,
                                   ),
                                 ),

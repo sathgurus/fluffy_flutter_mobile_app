@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/login.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,14 +14,14 @@ class _ProfileSettingsState extends State<ProfileSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffFFD9E8),
+      backgroundColor: AppColors.primary,
       appBar: AppBar(
         title: Text("Settings"),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.primary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context);
+          //  Navigator.pop(context);
           },
         ),
       ),
@@ -45,12 +46,13 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                       SizedBox(height: 5),
                       Text(
                         "Manage account details, and more",
-                        style: TextStyle(fontSize: 13, color: Colors.black54),
+                        style: TextStyle(fontSize: 13, color: Colors.white),
                       ),
                       SizedBox(height: 10),
                       Row(

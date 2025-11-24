@@ -1,4 +1,4 @@
-import 'package:fluffy/modules/app_theme/app_colors.dart';
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/auth/register.dart';
 import 'package:fluffy/modules/layout/widgets/bottom_nav.dart';
@@ -215,15 +215,15 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => RegisterScreen(
-                                      registerType: widget.customerLogin,
-                                    ),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder:
+                            //         (_) => RegisterScreen(
+                            //           registerType: widget.customerLogin,
+                            //         ),
+                            //   ),
+                            // );
                           },
                           child: const Text(
                             "Register Here",

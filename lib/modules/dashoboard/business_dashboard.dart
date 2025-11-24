@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/booking/booking_requests.dart';
 import 'package:fluffy/modules/dashoboard/widget/daily_shanpshot_card.dart';
@@ -36,7 +37,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Hello ${authProvider.userDetails?['name']},",
+                        "Hello Sathguru,",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -71,7 +72,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                     vertical: 14,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.redAccent,
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -132,7 +133,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                         value: "3",
                       ),
                       SnapshotItem(
-                        icon: Icons.attach_money,
+                        icon: Icons.currency_rupee,
                         label: "Est. Revenue",
                         value: "₹12,000",
                       ),

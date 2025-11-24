@@ -15,16 +15,17 @@ class ServiceProvider with ChangeNotifier {
     try {
       final api = ApiService(dotenv.env['API_URL']!);
 
-      final response = await api.getAll('/service/all');
+
+      final response = await api.getAll('/services/all');
 
       _isLoading = false;
       notifyListeners();
 
-      debugPrint("response $response");
+      //debugPrint("response $response");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('✅ service data: ${response.data}');
-        services = response.data['services']; 
+        // debugPrint('✅ service data: ${response.data}');
+        services = response.data['services'];
         return true;
       } else {
         debugPrint('❌ data fetch Failed: ${response.data}');

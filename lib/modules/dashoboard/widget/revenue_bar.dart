@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class TopServicesBarChart extends StatelessWidget {
@@ -62,7 +63,7 @@ class TopServicesBarChart extends StatelessWidget {
                                     width: barWidth,
                                     height: 22,
                                     decoration: BoxDecoration(
-                                      color: Colors.teal[200],
+                                      color: AppColors.primary,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),

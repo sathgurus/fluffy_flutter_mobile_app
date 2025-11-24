@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class ClientScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class _ClientScreenState extends State<ClientScreen> {
       appBar: AppBar(
         leading: BackButton(color: Colors.black),
         title: Text('Clients', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.primary,
         elevation: 0.5,
         actions: [
           IconButton(

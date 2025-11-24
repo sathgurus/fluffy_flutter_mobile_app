@@ -20,8 +20,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<LoginProvider>(context, listen: false);
     print("user detailes ${authProvider.userDetails}");
-    return authProvider.userDetails!['role'] == "business_owner"
-        ? BusinessDashboard()
-        : CustomerDashboard();
+    // return authProvider.userDetails!['role'] == "business_owner"
+    //     ? BusinessDashboard()
+    //     : CustomerDashboard();
+
+    return BusinessDashboard();
   }
 }

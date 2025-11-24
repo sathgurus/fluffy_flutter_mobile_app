@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class SnapshotItem extends StatelessWidget {
@@ -16,7 +17,7 @@ class SnapshotItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: Colors.redAccent, size: 22),
+        Icon(icon, color: AppColors.primary, size: 22),
         const SizedBox(height: 6),
         Text(
           value,

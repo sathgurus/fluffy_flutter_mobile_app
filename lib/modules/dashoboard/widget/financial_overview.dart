@@ -1,4 +1,4 @@
-import 'package:fluffy/modules/app_theme/app_colors.dart';
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/dashoboard/widget/financial_Card.dart';
 import 'package:fluffy/modules/dashoboard/widget/service_tile_card.dart';
 import 'package:flutter/material.dart';

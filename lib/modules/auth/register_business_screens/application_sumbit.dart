@@ -1,3 +1,5 @@
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
+import 'package:fluffy/modules/dashoboard/home.dart';
 import 'package:flutter/material.dart';
 
 class ApplicationSubmittedScreen extends StatefulWidget {
@@ -165,11 +167,15 @@ class _ApplicationSubmittedScreenState
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle 'Done' button tap
-                    print('Done button pressed');
+                    Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const HomeScreen(),
+                            ),
+                          );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor, // The salmon/pink color
+                    backgroundColor: AppColors.primary, // The salmon/pink color
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -181,7 +187,7 @@ class _ApplicationSubmittedScreenState
                   ),
                   child: const Text(
                     'Done',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color: Colors.white),
                   ),
                 ),
               ),

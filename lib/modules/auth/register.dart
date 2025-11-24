@@ -1,48 +1,46 @@
 import 'package:fluffy/modules/auth/otp_screen.dart';
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
+import 'package:fluffy/modules/auth/model/business_user_model.dart';
 import 'package:fluffy/modules/auth/provider/register_provider.dart';
-import 'package:fluffy/modules/auth/register_customer_screens/pet_name_screen.dart';
+import 'package:fluffy/modules/shared/appbar_widget.dart';
+import 'package:fluffy/modules/shared/constant.dart';
+import 'package:fluffy/modules/shared/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../app_theme/app_colors.dart';
 
-class RegisterScreen extends StatefulWidget {
-  final String registerType;
-  const RegisterScreen({super.key, required this.registerType});
+class BusinessRegisterScreen extends StatefulWidget {
+  const BusinessRegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<BusinessRegisterScreen> createState() => _BusinessRegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  bool _agreeToTerms = false;
+
+  final nameCtrl = TextEditingController();
+  final businessNameCtrl = TextEditingController();
+  final businessTypeCtrl = TextEditingController();
+  final businessPhoneCtrl = TextEditingController();
+  final altPhoneCtrl = TextEditingController();
+  final emailCtrl = TextEditingController();
+  final websiteCtrl = TextEditingController();
+  final passwordCtrl = TextEditingController();
+  final confirmPasswordCtrl = TextEditingController();
+  bool termsAccepted = false;
 
   @override
   void initState() {
     super.initState();
-    print("role ${widget.registerType}");
   }
 
   @override
   Widget build(BuildContext context) {
-    final registerProvider = Provider.of<RegisterProvider>(context);
+    final provider = Provider.of<RegisterProvider>(context);
 
-    //registerProvider.setRole(widget.registerType);
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          "Join PetCare",
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
-        ),
-        centerTitle: true,
-      ),
+      appBar: appBarWithBackButton(context, "Join PetCare"),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -73,60 +71,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  const Text(
-                    "BASIC INFORMATION",
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                  _field("Name", nameCtrl),
+                  const SizedBox(height: 20),
+                  _field("Business Name", businessNameCtrl),
+                  const SizedBox(height: 20),
+                  _field("Business Type", businessTypeCtrl),
+                  const SizedBox(height: 20),
+                  _field("Business Phone", businessPhoneCtrl),
+                  const SizedBox(height: 20),
+                  _field("Alternate Phone", altPhoneCtrl, requiredField: false),
+                  const SizedBox(height: 20),
+                  _field("Business Email", emailCtrl, requiredField: false),
+                  const SizedBox(height: 20),
+                  _field("Business Website", websiteCtrl, requiredField: false),
+                  const SizedBox(height: 20),
+                  _field("Password", passwordCtrl, isPassword: true),
+                  const SizedBox(height: 20),
+                  _field(
+                    "Confirm Password",
+                    confirmPasswordCtrl,
+                    isPassword: true,
                   ),
-                  const SizedBox(height: 10),
 
-                  _buildTextField(
-                    label: "Owner Name",
-                    onChanged: registerProvider.setName,
-                  ),
-                  const SizedBox(height: 15),
-
-                  _buildTextField(
-                    label: "Phone",
-                    onChanged: registerProvider.setPhone,
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 15),
-
-                  _buildTextField(
-                    label: "Email Address",
-                    onChanged: registerProvider.setEmail,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 15),
-
-                  _buildTextField(
-                    label: "Password",
-                    obscureText: true,
-                    onChanged: registerProvider.setPassword,
-                  ),
-                  const SizedBox(height: 15),
-
-                  _buildTextField(
-                    label: "Confirm Password",
-                    obscureText: true,
-                    onChanged: registerProvider.setConfirmPassword,
-                  ),
-                  const SizedBox(height: 15),
-
+                  const SizedBox(height: 20),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Checkbox(
-                        value: _agreeToTerms,
+                        value: termsAccepted,
                         activeColor: AppColors.primary,
                         onChanged: (value) {
                           setState(() {
-                            _agreeToTerms = value ?? false;
+                            termsAccepted = value ?? false;
                           });
                         },
                       ),
@@ -145,43 +121,57 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 20),
 
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (_agreeToTerms) {
-                          if (_formKey.currentState!.validate()) {
-                            bool success = await registerProvider.register(
-                              widget.registerType,
-                            );
+                        if (_formKey.currentState!.validate()) {
+                          BusinessUserModel user = BusinessUserModel(
+                            name: nameCtrl.text,
+                            businessName: businessNameCtrl.text,
+                            businessType: businessTypeCtrl.text,
+                            businessPhone: businessPhoneCtrl.text,
+                            altPhone: altPhoneCtrl.text,
+                            businessEmail: emailCtrl.text,
+                            businessWebsite: websiteCtrl.text,
+                            password: passwordCtrl.text,
+                            confirmPassword: confirmPasswordCtrl.text,
+                            termsAccepted: termsAccepted,
+                          );
 
-                            if (success) {
-                              // Navigate to OTP screen
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) => OtpVerificationPage(
-                                        registerType: widget.registerType,
-                                      ),
+                          bool result = await provider.register(user);
+
+                          if (result) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => const OtpVerificationPage(
+                                      registerType: "owner",
+                                    ),
+                              ),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: TextWidget(
+                                  text: "Business registered successfully.",
                                 ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Registration failed. Please try again.',
-                                  ),
-                                  backgroundColor: Colors.red,
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: TextWidget(
+                                  text:
+                                      "OTP verification failed. Please try again later.",
                                 ),
-                              );
-                            }
+                              ),
+                            );
                           }
                         }
                       },
-
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         disabledBackgroundColor: Colors.grey[300],
@@ -191,8 +181,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       child: const Text(
-                        "Continue to Business Setup",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        "Register",
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
@@ -204,24 +194,80 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+}
 
-  Widget _buildTextField({
-    required String label,
-    bool obscureText = false,
-    required Function(String) onChanged,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return TextFormField(
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+Widget _field(
+  String label,
+  TextEditingController ctrl, {
+  bool isPassword = false,
+  bool requiredField = true,
+}) {
+  bool isPhoneField = label.toLowerCase().contains(
+    "phone",
+  ); // detects phone & alternate phone
+
+  return TextFormField(
+    controller: ctrl,
+    obscureText: isPassword,
+
+    // === VALIDATION ===
+    validator: (v) {
+      if (requiredField && v!.isEmpty) {
+        return "$label is required";
+      }
+
+      if (isPhoneField && v!.length != 10) {
+        return "Enter a valid 10-digit number";
+      }
+
+      return null;
+    },
+
+    style: const TextStyle(fontSize: textSizeSMedium),
+    keyboardType: isPhoneField ? TextInputType.number : TextInputType.text,
+    maxLength: isPhoneField ? 10 : null,
+    inputFormatters:
+        isPhoneField ? [FilteringTextInputFormatter.digitsOnly] : [],
+    decoration: InputDecoration(
+      counterText: "",
+      label: RichText(
+        text: TextSpan(
+          text: label,
+          style: const TextStyle(
+            fontSize: textSizeSmall,
+            color: Colors.black87,
+          ),
+          children:
+              requiredField
+                  ? const [
+                    TextSpan(text: " *", style: TextStyle(color: Colors.red)),
+                  ]
+                  : [],
+        ),
       ),
-      validator:
-          (value) =>
-              value == null || value.isEmpty ? 'Please enter $label' : null,
-      onChanged: onChanged,
-    );
-  }
+
+      filled: true,
+      fillColor: Colors.white,
+
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
+      ),
+
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: BorderSide(color: appPrimaryColor, width: 1),
+      ),
+
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: const BorderSide(color: Colors.red, width: 1),
+      ),
+
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: const BorderSide(color: Colors.red, width: 1),
+      ),
+    ),
+  );
 }

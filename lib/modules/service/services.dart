@@ -23,6 +23,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
   @override
   Widget build(BuildContext context) {
     final serviceProvider = Provider.of<ServiceProvider>(context);
+    print("services data ${serviceProvider.services}");
 
     return Scaffold(
       appBar: AppBar(title: const Text("Services")),
@@ -32,10 +33,25 @@ class _ServicesScreenState extends State<ServicesScreen> {
               : ListView.builder(
                 itemCount: serviceProvider.services.length,
                 itemBuilder: (context, index) {
-                  final service = serviceProvider.services[index];
-                  return ListTile(
-                    title: Text(service['name']),
-                    subtitle: Text("₹ "),
+                  final category = serviceProvider.services[index];
+                  final subServices = category['services'] as List<dynamic>;
+
+                  return ExpansionTile(
+                    title: Text(category['name']),
+                    children: [
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: subServices.length,
+                        itemBuilder: (context, subIndex) {
+                          final sub = subServices[subIndex];
+                          return ListTile(
+                            title: Text(sub['name']),
+                            subtitle: Text("₹ ${sub['price']}"),
+                          );
+                        },
+                      ),
+                    ],
                   );
                 },
               ),

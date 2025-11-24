@@ -1,4 +1,4 @@
-import 'package:fluffy/modules/app_theme/app_colors.dart';
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/auth/register.dart';
 import 'package:fluffy/modules/layout/widgets/bottom_nav.dart';
@@ -145,44 +145,45 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed:
-                            authProvider.isLoading
-                                ? null
-                                : () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    bool success = await authProvider.login();
+                        onPressed: () {
+                          // authProvider.isLoading
+                          //     ? null
+                          //     :
+                          // () async {
+                          //       if (_formKey.currentState!.validate()) {
+                          //         bool success = await authProvider.login();
 
-                                    if (success) {
-                                      if (!mounted) return;
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => const BottomNav(),
-                                        ),
-                                      );
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Login successful.'),
-                                          backgroundColor: Colors.green,
-                                        ),
-                                      );
-                                    } else {
-                                      if (!mounted) return;
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Login failed. Please try again.',
-                                          ),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                    }
-                                  }
-                                },
+                          //         if (success) {
+                          //           if (!mounted) return;
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const BottomNav(),
+                            ),
+                          );
+                          //     ScaffoldMessenger.of(
+                          //       context,
+                          //     ).showSnackBar(
+                          //       const SnackBar(
+                          //         content: Text('Login successful.'),
+                          //         backgroundColor: Colors.green,
+                          //       ),
+                          //     );
+                          //   } else {
+                          //     if (!mounted) return;
+                          //     ScaffoldMessenger.of(
+                          //       context,
+                          //     ).showSnackBar(
+                          //       const SnackBar(
+                          //         content: Text(
+                          //           'Login failed. Please try again.',
+                          //         ),
+                          //         backgroundColor: Colors.red,
+                          //       ),
+                          //     );
+                          //   }
+                          // }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -220,10 +221,7 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder:
-                                    (_) => RegisterScreen(
-                                      registerType: widget.businessOwnerLogin,
-                                    ),
+                                builder: (_) => BusinessRegisterScreen(),
                               ),
                             );
                           },

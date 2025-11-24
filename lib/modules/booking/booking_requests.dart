@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/booking/widget/appionment_card.dart';
 import 'package:flutter/material.dart';
 
@@ -12,24 +13,45 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
    final List<Map<String, dynamic>> scheduleData = [
     {
       'time': '09:00 AM',
-      'client': 'Client Name',
+      'client': 'Shyam',
       'service': 'Service names',
       'status': 'COMPLETED',
       'color': const Color(0xFFA8E6CF),
     },
     {
       'time': '12:00 PM',
-      'client': 'Client Name',
+      'client': 'Vineeth',
       'service': 'Service names',
       'status': 'PENDING',
       'color': const Color(0xFFD1C4E9),
     },
     {
-      'time': '02:30 PM',
-      'client': 'Client Name',
+      'time': '01.00 PM',
+      'client': 'Nandhakumar',
       'service': 'Service names',
       'status': 'PENDING',
-      'color': const Color(0xFFE1BEE7),
+      'color': const Color(0xFFD1C4E9),
+    },
+     {
+      'time': '02:00 PM',
+      'client': 'Kavimathi',
+      'service': 'Service names',
+      'status': 'PENDING',
+      'color': const Color(0xFFD1C4E9),
+    },
+     {
+      'time': '03:00 PM',
+      'client': 'sathguru',
+      'service': 'Service names',
+      'status': 'PENDING',
+      'color': const Color(0xFFD1C4E9),
+    },
+     {
+      'time': '04:00 PM',
+      'client': 'swaitha',
+      'service': 'Service names',
+      'status': 'PENDING',
+      'color': const Color(0xFFD1C4E9),
     },
   ];
 
@@ -44,16 +66,18 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
     "04:00 PM",
     "05:00 PM",
     "06:00 PM",
+    "07:00 PM",
+    "08:00 PM",
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.appBarColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -61,7 +85,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
         title: const Text(
           "Thursday, October 5",
           style: TextStyle(
-            color: Colors.black87,
+            color: Colors.white,
             fontWeight: FontWeight.w500,
           ),
         ),

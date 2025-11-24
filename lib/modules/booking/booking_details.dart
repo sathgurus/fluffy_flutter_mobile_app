@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
@@ -14,8 +15,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       appBar: AppBar(
         title: Text("Booking Details"),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
         elevation: 0.5,
       ),
       body: Padding(
@@ -127,7 +128,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: AppColors.primary,
                     ),
                     child: Text("Accept"),
                   ),
@@ -137,7 +138,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                   child: OutlinedButton(
                     onPressed: () {},
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.orange,
+                      foregroundColor: AppColors.primary,
                     ),
                     child: Text("Decline"),
                   ),

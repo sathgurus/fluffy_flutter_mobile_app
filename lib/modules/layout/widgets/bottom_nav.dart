@@ -1,4 +1,4 @@
-import 'package:fluffy/modules/app_theme/app_colors.dart';
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/clients/client_screen.dart';
 import 'package:fluffy/modules/dashoboard/home.dart';
@@ -22,15 +22,20 @@ class _BottomNavState extends State<BottomNav> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<LoginProvider>(context, listen: false);
+    print("user detailes ${authProvider.userDetails}");
+
+    //authProvider.userDetails!['role'] = "end_user"; // to be removed later
 
     final List<Widget> pages = [
       HomeScreen(),
-      authProvider.userDetails!['role'] == "business_owner"
-          ? OrdersScreen()
-          : ServicesScreen(),
-      authProvider.userDetails!['role'] == "business_owner"
-          ? ClientScreen()
-          : OrdersScreen(),
+      // authProvider.userDetails!['role'] == "business_owner"
+      //     ? 
+          OrdersScreen(),
+      //     : ServicesScreen(),
+      // authProvider.userDetails!['role'] == "business_owner"
+      //     ? ClientScreen()
+      //     : OrdersScreen(),
+      ClientScreen(),
       ProfileSettings(),
     ];
     return Scaffold(
@@ -49,17 +54,17 @@ class _BottomNavState extends State<BottomNav> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today_outlined),
-            label:
-                authProvider.userDetails!['role'] == "business_owner"
-                    ? "Bookings"
-                    : "Service",
+            label:"Bookings",
+                // authProvider.userDetails!['role'] == "business_owner"
+                //     ? "Bookings"
+                //     : "Service",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.pets),
-            label:
-                authProvider.userDetails!['role'] == "business_owner"
-                    ? "Clients"
-                    : "Bookings",
+            label:"Clients"
+                // authProvider.userDetails!['role'] == "business_owner"
+                //     ? "Clients"
+                //     : "Bookings",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),

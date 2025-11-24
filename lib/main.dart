@@ -1,12 +1,15 @@
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
-import 'package:fluffy/modules/auth/register_business_screens/provider/business_provider.dart';
+import 'package:fluffy/modules/auth/register_business_screens/business_verification.dart';
+import 'package:fluffy/modules/auth/register_business_screens/add_service.dart';
+import 'package:fluffy/modules/auth/register_business_screens/provider/Add_service_provider.dart';
+import 'package:fluffy/modules/auth/register_business_screens/provider/business_verification_provider.dart';
 import 'package:fluffy/modules/auth/register_business_screens/provider/location_provider.dart';
 import 'package:fluffy/modules/service/provider/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
-import 'package:fluffy/modules/app_theme/app_colors.dart';
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/register_provider.dart';
 import 'package:fluffy/modules/layout/widgets/route_generator.dart';
 import 'package:fluffy/modules/layout/widgets/splash_screen.dart';
@@ -60,8 +63,9 @@ class _FluffyAppState extends State<FluffyApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (_) => RegisterProvider()),
         ChangeNotifierProvider(create: (_) => LoginProvider()),
         ChangeNotifierProvider(create: (_) => ServiceProvider()),
-        ChangeNotifierProvider(create: (_)=> BusinessProvider()),
-        ChangeNotifierProvider(create: (_)=> LocationProvider()),
+        ChangeNotifierProvider(create: (_) => LocationProvider()),
+        ChangeNotifierProvider(create: (_) => AddServiceProvider()),
+        ChangeNotifierProvider(create: (_) => BusinessVerificationProvider()),
         // 👇 Add other providers here if needed later
       ],
       child: FutureBuilder(
@@ -85,7 +89,7 @@ class _FluffyAppState extends State<FluffyApp> with WidgetsBindingObserver {
             navigatorKey: NavigationService().navigatorKey,
             routes: {
               '/': (context) => const SplashScreen(),
-              '/login': (context) => const LoginTabsScreen(),
+              '/login': (context) => const AddServices(),
               '/home': (context) => const BottomNav(),
               '/adminLogin': (context) => const AdminLogin(),
               // 👇 Add other Routers here if needed later
