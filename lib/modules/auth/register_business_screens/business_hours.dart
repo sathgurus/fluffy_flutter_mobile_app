@@ -1,9 +1,7 @@
-import 'package:fluffy/modules/auth/register_business_screens/provider/business_hours_provider.dart';
 import 'package:fluffy/modules/shared/appbar_widget.dart';
 import 'package:fluffy/modules/shared/constant.dart';
 import 'package:fluffy/modules/shared/text_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class BusinessHoursScreen extends StatefulWidget {
   const BusinessHoursScreen({super.key});
@@ -15,9 +13,18 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
   TimeOfDay commonStartTime = const TimeOfDay(hour: 9, minute: 0);
   TimeOfDay commonEndTime = const TimeOfDay(hour: 20, minute: 0);
 
-  // FORMAT TIME
-  String formatTime(String? time) => time ?? "Closed";
+  // Local list (instead of Provider)
+  final List<Map<String, dynamic>> hours = [
+    {"day": "monday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
+    {"day": "tuesday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
+    {"day": "wednesday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
+    {"day": "thursday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
+    {"day": "friday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
+    {"day": "saturday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
+    {"day": "sunday", "isOpen": false, "openTime": null, "closeTime": null},
+  ];
 
+  // FORMAT TIME
   String formatTimeOfDay(TimeOfDay tod) {
     final hour = tod.hourOfPeriod.toString().padLeft(2, '0');
     final minute = tod.minute.toString().padLeft(2, '0');
@@ -25,43 +32,47 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
     return "$hour:$minute $period";
   }
 
-  // Select ALL start time
+  // APPLY START TIME TO ALL
   Future<void> selectAllStartTime(BuildContext context) async {
-    final provider = Provider.of<BusinessHoursProvider>(context, listen: false);
-
     final picked = await showTimePicker(
       context: context,
       initialTime: commonStartTime,
     );
 
     if (picked != null) {
-      setState(() => commonStartTime = picked);
+      setState(() {
+        commonStartTime = picked;
+        String formatted = formatTimeOfDay(picked);
 
-      provider.applyStartTimeToAll(formatTimeOfDay(picked));
+        for (var day in hours) {
+          if (day["isOpen"]) day["openTime"] = formatted;
+        }
+      });
     }
   }
 
-  // Select ALL end time
+  // APPLY END TIME TO ALL
   Future<void> selectAllEndTime(BuildContext context) async {
-    final provider = Provider.of<BusinessHoursProvider>(context, listen: false);
-
     final picked = await showTimePicker(
       context: context,
       initialTime: commonEndTime,
     );
 
     if (picked != null) {
-      setState(() => commonEndTime = picked);
+      setState(() {
+        commonEndTime = picked;
+        String formatted = formatTimeOfDay(picked);
 
-      provider.applyEndTimeToAll(formatTimeOfDay(picked));
+        for (var day in hours) {
+          if (day["isOpen"]) day["closeTime"] = formatted;
+        }
+      });
     }
   }
 
-  // Select individual start/end time
+  // INDIVIDUAL TIME PICKER
   Future<void> pickTime(BuildContext context, int index, bool isStart) async {
-    final provider = Provider.of<BusinessHoursProvider>(context, listen: false);
-
-    if (!provider.hours[index].isOpen) return;
+    if (!hours[index]["isOpen"]) return;
 
     final picked = await showTimePicker(
       context: context,
@@ -69,19 +80,19 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
     );
 
     if (picked != null) {
-      final formatted = formatTimeOfDay(picked);
-
-      if (isStart) {
-        provider.updateOpenTime(index, formatted);
-      } else {
-        provider.updateCloseTime(index, formatted);
-      }
+      setState(() {
+        String formatted = formatTimeOfDay(picked);
+        if (isStart) {
+          hours[index]["openTime"] = formatted;
+        } else {
+          hours[index]["closeTime"] = formatted;
+        }
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<BusinessHoursProvider>(context);
     return Scaffold(
       appBar: appBarWithBackButton(context, "Business Hours"),
       body: Padding(
@@ -105,7 +116,10 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                 ),
               ],
             ),
+
             const SizedBox(height: 10),
+
+            /// GLOBAL SELECTOR
             Row(
               children: [
                 Expanded(
@@ -166,15 +180,15 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
 
             const SizedBox(height: 20),
 
+            /// LIST OF DAYS
             Expanded(
               child: ListView.builder(
-                itemCount: provider.hours.length,
+                itemCount: hours.length,
                 itemBuilder: (_, index) {
-                  final item = provider.hours[index];
-                  print("item $item");
+                  final item = hours[index];
+
                   return Container(
                     margin: const EdgeInsets.only(bottom: 15),
-                    //padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       color: Colors.grey.shade100,
@@ -184,20 +198,31 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                         Transform.scale(
                           scale: 0.8,
                           child: Switch(
-                            value: item.isOpen,
-                            onChanged: (v) => provider.toggleOpen(index, v),
+                            value: item["isOpen"],
+                            onChanged: (v) {
+                              setState(() {
+                                item["isOpen"] = v;
+                                if (!v) {
+                                  item["openTime"] = null;
+                                  item["closeTime"] = null;
+                                } else {
+                                  item["openTime"] = formatTimeOfDay(commonStartTime);
+                                  item["closeTime"] = formatTimeOfDay(commonEndTime);
+                                }
+                              });
+                            },
                           ),
                         ),
 
                         Text(
-                          item.day.toUpperCase(),
+                          item["day"].toString().toUpperCase(),
                           style: const TextStyle(
                             fontSize: textSizeSMedium,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
 
-                        Spacer(),
+                        const Spacer(),
 
                         // START TIME
                         GestureDetector(
@@ -212,7 +237,7 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                               border: Border.all(color: Colors.grey.shade400),
                             ),
                             child: Text(
-                              item.isOpen ? item.openTime ?? "" : "Closed",
+                              item["isOpen"] ? item["openTime"] ?? "Closed" : "Closed",
                             ),
                           ),
                         ),
@@ -231,7 +256,7 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                               border: Border.all(color: Colors.grey.shade400),
                             ),
                             child: Text(
-                              item.isOpen ? item.closeTime ?? "" : "Closed",
+                              item["isOpen"] ? item["closeTime"] ?? "Closed" : "Closed",
                             ),
                           ),
                         ),
@@ -242,7 +267,12 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
               ),
             ),
 
-            ElevatedButton(onPressed: () {}, child: Text("Continue")),
+            ElevatedButton(
+              onPressed: () {
+                print(hours); // Debug
+              },
+              child: const Text("Continue"),
+            ),
           ],
         ),
       ),

@@ -92,7 +92,7 @@ class _FluffyAppState extends State<FluffyApp> with WidgetsBindingObserver {
             navigatorKey: NavigationService().navigatorKey,
             routes: {
               '/': (context) => const SplashScreen(),
-              '/login': (context) => const BusinessHoursScreen(),
+              '/login': (context) => const AddServices(),
               '/home': (context) => const BottomNav(),
               '/adminLogin': (context) => const AdminLogin(),
               // 👇 Add other Routers here if needed later
