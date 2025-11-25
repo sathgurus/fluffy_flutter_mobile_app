@@ -1,7 +1,9 @@
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
+import 'package:fluffy/modules/auth/register_business_screens/business_hours.dart';
 import 'package:fluffy/modules/auth/register_business_screens/business_verification.dart';
 import 'package:fluffy/modules/auth/register_business_screens/add_service.dart';
 import 'package:fluffy/modules/auth/register_business_screens/provider/Add_service_provider.dart';
+import 'package:fluffy/modules/auth/register_business_screens/provider/business_hours_provider.dart';
 import 'package:fluffy/modules/auth/register_business_screens/provider/business_verification_provider.dart';
 import 'package:fluffy/modules/auth/register_business_screens/provider/location_provider.dart';
 import 'package:fluffy/modules/service/provider/service_provider.dart';
@@ -66,6 +68,7 @@ class _FluffyAppState extends State<FluffyApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (_) => LocationProvider()),
         ChangeNotifierProvider(create: (_) => AddServiceProvider()),
         ChangeNotifierProvider(create: (_) => BusinessVerificationProvider()),
+        ChangeNotifierProvider(create: (_) => BusinessHoursProvider()),
         // 👇 Add other providers here if needed later
       ],
       child: FutureBuilder(
@@ -89,7 +92,7 @@ class _FluffyAppState extends State<FluffyApp> with WidgetsBindingObserver {
             navigatorKey: NavigationService().navigatorKey,
             routes: {
               '/': (context) => const SplashScreen(),
-              '/login': (context) => const AddServices(),
+              '/login': (context) => const BusinessHoursScreen(),
               '/home': (context) => const BottomNav(),
               '/adminLogin': (context) => const AdminLogin(),
               // 👇 Add other Routers here if needed later

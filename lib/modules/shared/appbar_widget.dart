@@ -10,6 +10,7 @@ AppBar appBarWithBackButton(BuildContext context, String label) {
       text: label,
       fontWeight: FontWeight.w500,
       fontSize: textSizeNormal,
+      color: AppColors.whiteColor,
     ),
     backgroundColor: AppColors.primary,
     elevation: 1,

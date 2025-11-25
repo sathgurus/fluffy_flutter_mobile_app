@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/auth/register_business_screens/provider/Add_service_provider.dart';
 import 'package:fluffy/modules/service/provider/service_provider.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/shared/constant.dart';
@@ -7,6 +8,10 @@ import 'package:provider/provider.dart';
 
 void openAddServiceBottomSheet(BuildContext context) {
   final sp = Provider.of<ServiceProvider>(context, listen: false);
+  final addServiceProvider = Provider.of<AddServiceProvider>(
+    context,
+    listen: false,
+  );
 
   String? parentId;
   String? childId;
@@ -14,6 +19,7 @@ void openAddServiceBottomSheet(BuildContext context) {
   TextEditingController discountCtrl = TextEditingController();
   String discountType = "Percentage";
   List<String> taxOptions = ['Percentage', 'Amount'];
+  String selectedServiceType = "weekday";
 
   showModalBottomSheet(
     context: context,
@@ -123,6 +129,42 @@ void openAddServiceBottomSheet(BuildContext context) {
 
                     const SizedBox(height: 20),
 
+                    TextWidget(
+                      text: "Service Type",
+                      fontWeight: FontWeight.w400,
+                      fontSize: textSizeSMedium,
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Radio(
+                          value: "weekday",
+                          groupValue: selectedServiceType,
+                          onChanged: (value) {
+                            setState(
+                              () => selectedServiceType = value.toString(),
+                            );
+                          },
+                          activeColor: AppColors.primary,
+                        ),
+                        const Text("Weekday"),
+
+                        const SizedBox(width: 20),
+
+                        Radio(
+                          value: "weekend",
+                          groupValue: selectedServiceType,
+                          onChanged: (value) {
+                            setState(
+                              () => selectedServiceType = value.toString(),
+                            );
+                          },
+                          activeColor: AppColors.primary,
+                        ),
+                        const Text("Weekend"),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: priceCtrl,
                       keyboardType: TextInputType.number,
@@ -139,15 +181,14 @@ void openAddServiceBottomSheet(BuildContext context) {
                     const SizedBox(height: 20),
 
                     TextFormField(
-                      //controller: salesPriceController,
-                      
+                      controller: discountCtrl,
                       decoration: InputDecoration(
                         label: TextWidget(text: "Discount"),
                         border: const OutlineInputBorder(),
                         suffixIconConstraints: const BoxConstraints(
                           maxHeight: 18,
                         ),
-                         contentPadding: const EdgeInsets.symmetric(
+                        contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 10,
                         ),
@@ -204,7 +245,48 @@ void openAddServiceBottomSheet(BuildContext context) {
                             );
                             return;
                           }
+                          final parent = parentList.firstWhere(
+                            (p) => p['_id'] == parentId,
+                          );
+                          final child = childList.firstWhere(
+                            (c) => c['_id'] == childId,
+                          );
 
+                          String price = priceCtrl.text.trim();
+                          String discount = discountCtrl.text.trim();
+                          String parentName = parent['name'];
+                          String childName = child['name'];
+
+                          print("discount $discount");
+
+                          if (price.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Enter base price")),
+                            );
+                            return;
+                          }
+
+                          double finalPrice = double.parse(price);
+                          if (discount.isNotEmpty) {
+                            double discountVal = double.parse(discount);
+                            if (discountType == 'Percentage') {
+                              finalPrice =
+                                  finalPrice - (finalPrice * discountVal / 100);
+                            } else {
+                              finalPrice -= discountVal;
+                            }
+                            if (finalPrice < 0) finalPrice = 0;
+                          }
+                          addServiceProvider.addService(
+                            parent: parentName,
+                            child: childName,
+                            price: price,
+                            discount: discount,
+                            discountType: discountType,
+                            finalPrice: finalPrice.toStringAsFixed(2),
+                            serviceType: selectedServiceType,
+                            serviceId: child['_id'],
+                          );
                           Navigator.pop(context); // close bottom sheet
                         },
                         style: ElevatedButton.styleFrom(
