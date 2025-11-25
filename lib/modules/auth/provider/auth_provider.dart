@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:fluffy/modules/repositorey/common_api_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -57,7 +58,7 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> login() async {
+  Future<dynamic> login(String role) async {
     _isLoading = true;
     notifyListeners();
 
@@ -66,16 +67,16 @@ class LoginProvider with ChangeNotifier {
       final api = ApiService(dotenv.env['API_URL']!);
 
       // API call
-      final response = await api.post('/login', {
-        'phone': _phone,
+      final response = await api.post('/auth/login', {
+        'businessPhone': _phone,
         'password': _password,
-        'role': "business_owner",
+        'role': role,
       });
 
       _isLoading = false;
       notifyListeners();
 
-      debugPrint("response $response");
+      print("response $response");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _userDetails =
@@ -86,17 +87,22 @@ class LoginProvider with ChangeNotifier {
           token: _token,
           userDetails: _userDetails,
         );
-        debugPrint('✅ Login Successful: ${response.data}');
-        return true;
+        print('✅ Login Successful: ${response.data}');
+        return {"success": true, "isVerified": true, "data": response.data};
       } else {
-        debugPrint('❌ Login Failed: ${response.data}');
-        return false;
+        print('❌ Login Failed: ${response.data}');
+        return response.data;
       }
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      debugPrint('🚨 Login Error: $e');
-      return false;
+      print('🚨 Login Error: $e');
+
+      return {
+        "success": false,
+        "isVerified": false,
+        "message": "Something went wrong",
+      };
     }
   }
 }

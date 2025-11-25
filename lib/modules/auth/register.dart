@@ -248,7 +248,7 @@ Widget _field(
 
       filled: true,
       fillColor: Colors.white,
-
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(5),
         borderSide: BorderSide(color: Colors.grey.shade400, width: 1),

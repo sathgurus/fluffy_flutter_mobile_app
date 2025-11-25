@@ -47,13 +47,13 @@ class BusinessVerificationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> businessVerify() async {
+  Future<bool> businessVerify(String? userId) async {
     try {
       isLoading = true;
       notifyListeners();
       final api = ApiService(dotenv.env['API_URL']!);
 
-     // verificationData.userId = "6922fdcd0c379ff8f03c05e7";
+      verificationData.userId = userId;
 
       print("verificationData ${verificationData.toJson()}");
 

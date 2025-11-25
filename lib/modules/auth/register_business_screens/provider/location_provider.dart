@@ -12,31 +12,26 @@ class LocationProvider with ChangeNotifier {
   bool get loading => _loading;
   LocationModel? get location => _location;
 
-  Future<void> updateLocation(LocationModel data) async {
+  Future<bool> updateLocation(LocationModel data) async {
     _loading = true;
     notifyListeners();
 
     try {
        final api = ApiService(dotenv.env['API_URL']!);
 
-     final body = {
-      "businessOwnerId": data.businessOwnerId,
-      "latitude": data.latitude,
-      "longitude": data.longitude,
-      "address": data.address,
-    };
-      final response = await api.post('/location/ping', body);
+      final response = await api.post('/auth/ping-location', data.toJson());
 
       final responseData = response;
       print("response data location $responseData");
 
-      // if (response.statusCode == 200) {
-      //   _location = LocationModel.fromJson(responseData['location']);
-      // } else {
-      //   throw responseData.statusMessage ?? "Something went wrong";
-      // }
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       print("Location update error: $e");
+      return false;
     }
 
     _loading = false;

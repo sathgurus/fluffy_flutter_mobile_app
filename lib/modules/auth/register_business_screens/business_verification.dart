@@ -8,6 +8,7 @@ import 'package:fluffy/modules/shared/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BusinessVerification extends StatefulWidget {
   const BusinessVerification({super.key});
@@ -25,6 +26,25 @@ class _BusinessVerificationState extends State<BusinessVerification> {
   final aadhaarCtrl = TextEditingController();
 
   final ImagePicker picker = ImagePicker();
+
+  String? userId;
+
+  @override
+  void initState() {
+    super.initState();
+
+    loadUserData();
+  }
+
+  void loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      userId = prefs.getString("userId");
+    });
+
+    print("User ID: $userId");
+  }
 
   // ------------------------ PICK IMAGE ------------------------
   Future<String?> pickImageFromGallery() async {
@@ -269,7 +289,7 @@ class _BusinessVerificationState extends State<BusinessVerification> {
       return;
     }
     provider.loadUserId();
-    bool result = await provider.businessVerify();
+    bool result = await provider.businessVerify(userId);
 
     if (result) {
       Navigator.push(context, MaterialPageRoute(builder: (_) => AddServices()));

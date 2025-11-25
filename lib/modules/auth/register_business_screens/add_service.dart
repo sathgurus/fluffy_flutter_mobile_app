@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/auth/register_business_screens/business_hours.dart';
 import 'package:fluffy/modules/auth/register_business_screens/widget/add_service_bs.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/register_business_screens/business_verification.dart';
@@ -6,6 +7,7 @@ import 'package:fluffy/modules/auth/register_business_screens/provider/Add_servi
 import 'package:fluffy/modules/service/provider/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddServices extends StatefulWidget {
   const AddServices({super.key});
@@ -21,6 +23,7 @@ class _AddServicesState extends State<AddServices> {
   String discountType = 'Percentage';
   String? selectedParentId;
   String? selectedChildId;
+  String? userId;
 
   @override
   void initState() {
@@ -28,6 +31,17 @@ class _AddServicesState extends State<AddServices> {
     Future.microtask(() {
       Provider.of<ServiceProvider>(context, listen: false).fetchAllServices();
     });
+    loadUserData();
+  }
+
+  void loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      userId = prefs.getString("userId");
+    });
+
+    print("User ID: $userId");
   }
 
   void resetForm() {
@@ -182,11 +196,7 @@ class _AddServicesState extends State<AddServices> {
                     child: ElevatedButton(
                       onPressed: () async {
                         try {
-                          var businessOwnerId = "690cea0ca953fbe2bb4e29d9";
-
-                          bool result = await provider.submitServices(
-                            businessOwnerId,
-                          );
+                          bool result = await provider.submitServices(userId!);
 
                           if (result) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -196,12 +206,12 @@ class _AddServicesState extends State<AddServices> {
                               ),
                             );
 
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (_) => const AddPersonalDetails(),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const BusinessHoursScreen(),
+                              ),
+                            );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(

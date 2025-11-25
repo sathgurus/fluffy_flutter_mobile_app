@@ -83,7 +83,7 @@ class AddServiceProvider with ChangeNotifier {
 
     try {
       final api = ApiService(dotenv.env['API_URL']!);
-      businessOwnerId = "6922fdcd0c379ff8f03c05e7";
+
       var data = {
         "businessOwnerId": businessOwnerId,
         "services": finalSelectedServices,

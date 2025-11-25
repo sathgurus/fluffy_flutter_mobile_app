@@ -1,5 +1,6 @@
 import 'package:fluffy/modules/auth/register_business_screens/business_login.dart';
 import 'package:fluffy/modules/auth/register_customer_screens/customer_login.dart';
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class LoginTabsScreen extends StatefulWidget {
@@ -49,7 +50,7 @@ class _LoginTabsScreenState extends State<LoginTabsScreen>
                     isScrollable: false, // ✅ Make tabs expand
                     tabAlignment:
                         TabAlignment.fill, // ✅ Fill full width equally
-                    labelColor: Colors.blue,
+                    labelColor: AppColors.primary,
                     indicator: const BoxDecoration(),
                     indicatorColor: Colors.transparent,
 
@@ -64,7 +65,7 @@ class _LoginTabsScreenState extends State<LoginTabsScreen>
                           style: TextStyle(
                             color:
                                 _tabController.index == 0
-                                    ? Colors.blue
+                                    ? AppColors.primary
                                     : Colors.black,
                             fontWeight: FontWeight.w600,
                           ),
@@ -76,7 +77,7 @@ class _LoginTabsScreenState extends State<LoginTabsScreen>
                           style: TextStyle(
                             color:
                                 _tabController.index == 1
-                                    ? Colors.blue
+                                    ? AppColors.primary
                                     : Colors.black,
                             fontWeight: FontWeight.w600,
                           ),
@@ -93,8 +94,8 @@ class _LoginTabsScreenState extends State<LoginTabsScreen>
             child: TabBarView(
               controller: _tabController,
               children: const [
-                BusinessLoginScreen(businessOwnerLogin: "business_owner"),
-                CustomerLoginScreen(customerLogin: "end_user"),
+                BusinessLoginScreen(businessOwnerLogin: "owner"),
+                CustomerLoginScreen(customerLogin: "customer"),
               ],
             ),
           ),

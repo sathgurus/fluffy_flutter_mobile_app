@@ -143,44 +143,39 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed:
-                            authProvider.isLoading
-                                ? null
-                                : () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    bool success = await authProvider.login();
+                        onPressed: () async {
+                          // if (_formKey.currentState!.validate()) {
+                          //   bool success = await authProvider.login(
+                          //     widget.customerLogin,
+                          //   );
 
-                                    if (success) {
-                                      if (!mounted) return;
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => const BottomNav(),
-                                        ),
-                                      );
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Login successful.'),
-                                          backgroundColor: Colors.green,
-                                        ),
-                                      );
-                                    } else {
-                                      if (!mounted) return;
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Login failed. Please try again.',
-                                          ),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                    }
-                                  }
-                                },
+                          //   if (success) {
+                          //     if (!mounted) return;
+                          //     Navigator.pushReplacement(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //         builder: (_) => const BottomNav(),
+                          //       ),
+                          //     );
+                          //     ScaffoldMessenger.of(context).showSnackBar(
+                          //       const SnackBar(
+                          //         content: Text('Login successful.'),
+                          //         backgroundColor: Colors.green,
+                          //       ),
+                          //     );
+                          //   } else {
+                          //     if (!mounted) return;
+                          //     ScaffoldMessenger.of(context).showSnackBar(
+                          //       const SnackBar(
+                          //         content: Text(
+                          //           'Login failed. Please try again.',
+                          //         ),
+                          //         backgroundColor: Colors.red,
+                          //       ),
+                          //     );
+                          //   }
+                          // }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           padding: const EdgeInsets.symmetric(vertical: 14),

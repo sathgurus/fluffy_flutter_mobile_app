@@ -1,7 +1,9 @@
+import 'package:fluffy/modules/auth/register_business_screens/widget/business_not_verify.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/auth/register.dart';
 import 'package:fluffy/modules/layout/widgets/bottom_nav.dart';
+import 'package:fluffy/modules/shared/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +19,7 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _mobileController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool obscurePassword = true;
 
   @override
   void dispose() {
@@ -88,11 +91,47 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                     TextFormField(
                       controller: _mobileController,
                       decoration: InputDecoration(
-                        labelText: "Mobile Number",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                        label: TextWidget(text: "Mobile Number"),
+                        filled: true,
+                        fillColor: Colors.white,
+                        counterText: "",
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400,
+                            width: 1,
+                          ),
+                        ),
+
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(
+                            color: appPrimaryColor,
+                            width: 1,
+                          ),
+                        ),
+
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 1,
+                          ),
+                        ),
+
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 1,
+                          ),
                         ),
                       ),
+                      maxLength: 10,
                       keyboardType: TextInputType.phone,
                       onChanged: authProvider.setPhone,
                       validator: (value) {
@@ -104,16 +143,63 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 20),
 
                     // 🔒 Password Field
                     TextFormField(
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: obscurePassword,
                       decoration: InputDecoration(
-                        labelText: "Password",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                        label: TextWidget(text: "Password"),
+                        filled: true,
+                        fillColor: Colors.white,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.grey,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              obscurePassword = !obscurePassword; // toggle
+                            });
+                          },
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400,
+                            width: 1,
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(
+                            color: appPrimaryColor,
+                            width: 1,
+                          ),
+                        ),
+
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 1,
+                          ),
+                        ),
+
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 1,
+                          ),
                         ),
                       ),
                       onChanged: authProvider.setPassword,
@@ -145,44 +231,48 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // authProvider.isLoading
-                          //     ? null
-                          //     :
-                          // () async {
-                          //       if (_formKey.currentState!.validate()) {
-                          //         bool success = await authProvider.login();
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            final res = await authProvider.login(
+                              widget.businessOwnerLogin,
+                            );
 
-                          //         if (success) {
-                          //           if (!mounted) return;
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const BottomNav(),
-                            ),
-                          );
-                          //     ScaffoldMessenger.of(
-                          //       context,
-                          //     ).showSnackBar(
-                          //       const SnackBar(
-                          //         content: Text('Login successful.'),
-                          //         backgroundColor: Colors.green,
-                          //       ),
-                          //     );
-                          //   } else {
-                          //     if (!mounted) return;
-                          //     ScaffoldMessenger.of(
-                          //       context,
-                          //     ).showSnackBar(
-                          //       const SnackBar(
-                          //         content: Text(
-                          //           'Login failed. Please try again.',
-                          //         ),
-                          //         backgroundColor: Colors.red,
-                          //       ),
-                          //     );
-                          //   }
-                          // }
+                            if (res['isVerified'] == false) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => BusinessNotVerifiedScreen(
+                                        message:
+                                            "Your business is not verified. Please contact customer care.",
+                                      ),
+                                ),
+                              );
+                            }
+
+                            if (res['isVerified']) {
+                              if (!mounted) return;
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const BottomNav(),
+                                ),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Login successful.'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Login failed"),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,

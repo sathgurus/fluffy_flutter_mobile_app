@@ -69,14 +69,16 @@ class BusinessHoursProvider extends ChangeNotifier {
   }
 
   // ---- API: Save Business Hours ----
-  Future<bool> submitHours(String businessId) async {
-    final body =
-        BusinessHoursModel(businessId: businessId, hours: hours).toJson();
+  Future<bool> submitHours(
+    String businessId,
+    List<Map<String, dynamic>> hours,
+  ) async {
+    final body = {"businessId": businessId, "hours": hours};
 
     try {
       final api = ApiService(dotenv.env['API_URL']!);
-      businessId = "6922fdcd0c379ff8f03c05e7";
-      final response = await api.post('/services/add', body);
+
+      final response = await api.post('/auth/business-hours', body);
       print("response $response");
       if (response.statusCode == 201 || response.statusCode == 200) {
         return true;

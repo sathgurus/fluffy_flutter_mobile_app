@@ -1,7 +1,12 @@
+import 'package:fluffy/modules/auth/register_business_screens/add_location.dart';
+import 'package:fluffy/modules/auth/register_business_screens/provider/business_hours_provider.dart';
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/shared/appbar_widget.dart';
 import 'package:fluffy/modules/shared/constant.dart';
 import 'package:fluffy/modules/shared/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BusinessHoursScreen extends StatefulWidget {
   const BusinessHoursScreen({super.key});
@@ -13,14 +18,63 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
   TimeOfDay commonStartTime = const TimeOfDay(hour: 9, minute: 0);
   TimeOfDay commonEndTime = const TimeOfDay(hour: 20, minute: 0);
 
+  String? userId;
+
+  @override
+  void initState() {
+    super.initState();
+
+    loadUserData();
+  }
+
+  void loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      userId = prefs.getString("userId");
+    });
+
+    print("User ID: $userId");
+  }
+
   // Local list (instead of Provider)
   final List<Map<String, dynamic>> hours = [
-    {"day": "monday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
-    {"day": "tuesday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
-    {"day": "wednesday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
-    {"day": "thursday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
-    {"day": "friday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
-    {"day": "saturday", "isOpen": true, "openTime": "09:00 AM", "closeTime": "08:00 PM"},
+    {
+      "day": "monday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
+    {
+      "day": "tuesday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
+    {
+      "day": "wednesday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
+    {
+      "day": "thursday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
+    {
+      "day": "friday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
+    {
+      "day": "saturday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
     {"day": "sunday", "isOpen": false, "openTime": null, "closeTime": null},
   ];
 
@@ -93,6 +147,7 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final businessHoursProvider = Provider.of<BusinessHoursProvider>(context);
     return Scaffold(
       appBar: appBarWithBackButton(context, "Business Hours"),
       body: Padding(
@@ -206,8 +261,12 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                                   item["openTime"] = null;
                                   item["closeTime"] = null;
                                 } else {
-                                  item["openTime"] = formatTimeOfDay(commonStartTime);
-                                  item["closeTime"] = formatTimeOfDay(commonEndTime);
+                                  item["openTime"] = formatTimeOfDay(
+                                    commonStartTime,
+                                  );
+                                  item["closeTime"] = formatTimeOfDay(
+                                    commonEndTime,
+                                  );
                                 }
                               });
                             },
@@ -237,7 +296,9 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                               border: Border.all(color: Colors.grey.shade400),
                             ),
                             child: Text(
-                              item["isOpen"] ? item["openTime"] ?? "Closed" : "Closed",
+                              item["isOpen"]
+                                  ? item["openTime"] ?? "Closed"
+                                  : "Closed",
                             ),
                           ),
                         ),
@@ -256,7 +317,9 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                               border: Border.all(color: Colors.grey.shade400),
                             ),
                             child: Text(
-                              item["isOpen"] ? item["closeTime"] ?? "Closed" : "Closed",
+                              item["isOpen"]
+                                  ? item["closeTime"] ?? "Closed"
+                                  : "Closed",
                             ),
                           ),
                         ),
@@ -267,11 +330,46 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
               ),
             ),
 
-            ElevatedButton(
-              onPressed: () {
-                print(hours); // Debug
-              },
-              child: const Text("Continue"),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () async {
+                  try {
+                    final result = await businessHoursProvider.submitHours(
+                      userId!,
+                      hours,
+                    );
+                    if (result) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("✅ Business Hours Added Successfully"),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const AddLocation()),
+                      );
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Failed to add business hours"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+                child: const Text("Continue"),
+              ),
             ),
           ],
         ),

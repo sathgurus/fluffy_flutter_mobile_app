@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/auth/login.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/dashoboard/home.dart';
 import 'package:flutter/material.dart';
@@ -168,11 +169,11 @@ class _ApplicationSubmittedScreenState
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const HomeScreen(),
-                            ),
-                          );
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const LoginTabsScreen(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary, // The salmon/pink color
@@ -187,7 +188,11 @@ class _ApplicationSubmittedScreenState
                   ),
                   child: const Text(
                     'Done',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
