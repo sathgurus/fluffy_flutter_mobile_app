@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/auth/helper/category_initilizer.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/auth/register_business_screens/add_location.dart';
 import 'package:fluffy/modules/auth/register_business_screens/business_hours.dart';
@@ -32,7 +33,7 @@ Future<void> main() async {
   await authProvider.loadUserData();
 
   print("user details ${authProvider.userDetails}");
-
+  await CategoryInitializer.initDefaultCategories();
   runApp(const FluffyApp());
 }
 
@@ -93,7 +94,7 @@ class _FluffyAppState extends State<FluffyApp> with WidgetsBindingObserver {
             navigatorKey: NavigationService().navigatorKey,
             routes: {
               '/': (context) => const SplashScreen(),
-              '/login': (context) => const LoginTabsScreen(),
+              '/login': (context) => const AddServices(),
               '/home': (context) => const BottomNav(),
               '/adminLogin': (context) => const AdminLogin(),
               // 👇 Add other Routers here if needed later

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fluffy/modules/auth/helper/service_helper.dart';
 import 'package:fluffy/modules/auth/register_business_screens/model/service_model.dart';
 import 'package:fluffy/modules/repositorey/common_api_repo.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class AddServiceProvider with ChangeNotifier {
   String? userId;
 
   void addService({
+    required String parentId,
     required String parent, // category name
     required String child, // service name
     required String price, // base price
@@ -27,12 +29,13 @@ class AddServiceProvider with ChangeNotifier {
 
     // Build service object
     Map<String, dynamic> serviceObject = {
+      "id": serviceId,
       "name": child,
       "price": price,
       "serviceType": serviceType,
     };
 
-    print(" $serviceObject");
+    print("service object $serviceObject");
 
     // Add discount ONLY if user entered a value
     if (discount != null && discount.trim().isNotEmpty) {
@@ -45,6 +48,7 @@ class AddServiceProvider with ChangeNotifier {
     } else {
       // Create new category
       finalSelectedServices.add({
+        "id": parentId,
         "name": parent,
         "services": [serviceObject],
       });
@@ -58,6 +62,8 @@ class AddServiceProvider with ChangeNotifier {
       "discountType": (discount ?? "").isEmpty ? "" : discountType,
       //"price": finalPrice,
     });
+
+    print("finalSelectedServices $finalSelectedServices");
 
     notifyListeners();
   }
@@ -80,29 +86,55 @@ class AddServiceProvider with ChangeNotifier {
   Future<bool> submitServices(String businessOwnerId) async {
     isLoading = true;
     notifyListeners();
+    print("businessOwnerId $businessOwnerId");
+    print("finalSelectedServices $finalSelectedServices");
 
     try {
-      final api = ApiService(dotenv.env['API_URL']!);
+      final List<Map<String, dynamic>> list = await ServiceFileHelper.readAll();
 
-      var data = {
-        "businessOwnerId": businessOwnerId,
-        "services": finalSelectedServices,
-      };
-      print("finalSelectedServices $finalSelectedServices");
-      final response = await api.post('/services/add', data);
-      final responseData = response;
-      print("response data location $responseData");
+      final index = list.indexWhere(
+        (e) => e["businessOwnerId"] == businessOwnerId,
+      );
 
-      isLoading = false;
-      notifyListeners();
+      final ownerData = {
+      "businessOwnerId": businessOwnerId,
+      "services": finalSelectedServices
+    };
 
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        resetServices();
-        return true;
-      } else {
-        print("API error: ${response.statusMessage}");
-        return false;
-      }
+      if (index == -1) {
+      list.add(ownerData);
+    } 
+     await ServiceFileHelper.writeAll(list);
+
+    resetServices();
+
+    isLoading = false;
+    notifyListeners();
+
+    print("✅ Services stored locally");
+    return true;
+      // final api = ApiService(dotenv.env['API_URL']!);
+
+      // var data = {
+      //   "businessOwnerId": businessOwnerId,
+      //   "services": finalSelectedServices,
+      // };
+
+      // final response = await api.post('/services/add', data);
+      // final responseData = response;
+      // print("response data location $responseData");
+
+      // isLoading = false;
+      // notifyListeners();
+      
+
+      // if (response.statusCode == 201 || response.statusCode == 200) {
+      //   resetServices();
+      //   return true;
+      // } else {
+      //   print("API error: ${response.statusMessage}");
+      //   return false;
+      // }
     } catch (e) {
       isLoading = false;
       notifyListeners();
@@ -110,4 +142,17 @@ class AddServiceProvider with ChangeNotifier {
       return false;
     }
   }
+
+  Future<List> getServicesByOwner(String ownerId) async {
+  final list = await ServiceFileHelper.readAll();
+
+  final data = list.firstWhere(
+    (e) => e['businessOwnerId'] == ownerId,
+    orElse: () => {},
+  );
+
+  print("data $data");
+
+  return data['services'] ?? [];
+}
 }

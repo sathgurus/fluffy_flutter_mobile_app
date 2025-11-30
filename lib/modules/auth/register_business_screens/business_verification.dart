@@ -167,17 +167,17 @@ class _BusinessVerificationState extends State<BusinessVerification> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.grey.shade400),
                         image:
-                            provider.verificationData.logoUrl != null
+                            provider.verificationData.shopLogo != null
                                 ? DecorationImage(
                                   image: FileImage(
-                                    File(provider.verificationData.logoUrl!),
+                                    File(provider.verificationData.shopLogo!),
                                   ),
                                   fit: BoxFit.cover,
                                 )
                                 : null,
                       ),
                       child:
-                          provider.verificationData.logoUrl == null
+                          provider.verificationData.shopLogo == null
                               ? Center(
                                 child: Icon(
                                   Icons.add,
@@ -282,19 +282,22 @@ class _BusinessVerificationState extends State<BusinessVerification> {
       return;
     }
 
-    if (provider.verificationData.logoUrl == null) {
+    if (provider.verificationData.shopLogo == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Business logo is required")),
       );
       return;
     }
-    provider.loadUserId();
+    //provider.();
     bool result = await provider.businessVerify(userId);
 
     if (result) {
       Navigator.push(context, MaterialPageRoute(builder: (_) => AddServices()));
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Business verification successfully.")),
+        const SnackBar(
+          content: Text("Business verification successfully."),
+          backgroundColor: Colors.green,
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

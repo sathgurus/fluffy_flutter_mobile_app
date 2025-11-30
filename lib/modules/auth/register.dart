@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/auth/model/business_user_file_model.dart';
 import 'package:fluffy/modules/auth/otp_screen.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/model/business_user_model.dart';
@@ -128,7 +129,20 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          BusinessUserModel user = BusinessUserModel(
+                          // BusinessUserModel user = BusinessUserModel(
+                          //   name: nameCtrl.text,
+                          //   businessName: businessNameCtrl.text,
+                          //   businessType: businessTypeCtrl.text,
+                          //   businessPhone: businessPhoneCtrl.text,
+                          //   altPhone: altPhoneCtrl.text,
+                          //   businessEmail: emailCtrl.text,
+                          //   businessWebsite: websiteCtrl.text,
+                          //   password: passwordCtrl.text,
+                          //   confirmPassword: confirmPasswordCtrl.text,
+                          //   termsAccepted: termsAccepted,
+                          // );
+
+                          BusinessUserFileModel user = BusinessUserFileModel(
                             name: nameCtrl.text,
                             businessName: businessNameCtrl.text,
                             businessType: businessTypeCtrl.text,
@@ -137,7 +151,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                             businessEmail: emailCtrl.text,
                             businessWebsite: websiteCtrl.text,
                             password: passwordCtrl.text,
-                            confirmPassword: confirmPasswordCtrl.text,
+                            //confirmPassword: confirmPasswordCtrl.text,
                             termsAccepted: termsAccepted,
                           );
 
@@ -158,6 +172,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                                 content: TextWidget(
                                   text: "Business registered successfully.",
                                 ),
+                                backgroundColor: Colors.green,
                               ),
                             );
                           } else {
@@ -216,7 +231,7 @@ Widget _field(
         return "$label is required";
       }
 
-      if (isPhoneField && v!.length != 10) {
+      if (isPhoneField && v!.isNotEmpty && v.length != 10) {
         return "Enter a valid 10-digit number";
       }
 

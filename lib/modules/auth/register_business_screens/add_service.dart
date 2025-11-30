@@ -28,10 +28,14 @@ class _AddServicesState extends State<AddServices> {
   @override
   void initState() {
     super.initState();
+    loadUserData();
     Future.microtask(() {
       Provider.of<ServiceProvider>(context, listen: false).fetchAllServices();
+      Provider.of<AddServiceProvider>(
+        context,
+        listen: false,
+      ).getServicesByOwner(userId.toString());
     });
-    loadUserData();
   }
 
   void loadUserData() async {
@@ -56,19 +60,8 @@ class _AddServicesState extends State<AddServices> {
 
   @override
   Widget build(BuildContext context) {
-    final sp = Provider.of<ServiceProvider>(context);
     final provider = Provider.of<AddServiceProvider>(context, listen: false);
     final selectedServices = provider.selectedServices;
-
-    final parentList = sp.services; // API response
-    final childList =
-        selectedParentId != null
-            ? parentList.firstWhere(
-                  (p) => p['_id'] == selectedParentId,
-                  orElse: () => {},
-                )['services'] ??
-                []
-            : [];
 
     return Scaffold(
       appBar: AppBar(
