@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:fluffy/modules/auth/helper/login_file_helper.dart';
 import 'package:fluffy/modules/repositorey/common_api_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -28,7 +29,6 @@ class LoginProvider with ChangeNotifier {
     return File("${dir.path}/users.json");
   }
 
-
   Future<void> saveUserData(
     String userId, {
     String? token,
@@ -41,7 +41,6 @@ class LoginProvider with ChangeNotifier {
       await prefs.setString('userDetails', jsonEncode(userDetails));
     }
   }
-
 
   // Load user ID and token
   Future<void> loadUserData() async {
@@ -72,36 +71,67 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      // Create instance of ApiService
-      final api = ApiService(dotenv.env['API_URL']!);
+      final users = await LocalUserHelper.readUsers();
 
-      // API call
-      final response = await api.post('/auth/login', {
-        'businessPhone': _phone,
-        'password': _password,
-        'role': role,
-      });
+      print("users $users");
+
+      // Check phone
+      final user = users.firstWhere(
+        (u) => u['businessPhone'] == _phone,
+        orElse: () => {},
+      );
+      print("users $user");
+      if (user.isEmpty) {
+        return {"success": false, "message": "Phone number not found"};
+      }
+
+      // Check password
+      if (user['password'] != _password) {
+        return {"success": false, "message": "Invalid password"};
+      }
+
+      // SUCCESS ✅
+      _userDetails = user;
+      _userId = user['id'];
+      _token = "LOCAL_LOGIN";
+
+      await saveUserData(_userId!, userDetails: user, token: _token);
 
       _isLoading = false;
       notifyListeners();
 
-      print("response $response");
+      return {"success": true, "message": "Login successful", "data": user};
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        _userDetails =
-            response.data['user']; // assuming API returns a `user` object
-        _token = response.data['token'];
-        await saveUserData(
-          _userDetails?['id'],
-          token: _token,
-          userDetails: _userDetails,
-        );
-        print('✅ Login Successful: ${response.data}');
-        return {"success": true, "isVerified": true, "data": response.data};
-      } else {
-        print('❌ Login Failed: ${response.data}');
-        return response.data;
-      }
+      // // Create instance of ApiService
+      // final api = ApiService(dotenv.env['API_URL']!);
+
+      // // API call
+      // final response = await api.post('/auth/login', {
+      //   'businessPhone': _phone,
+      //   'password': _password,
+      //   'role': role,
+      // });
+
+      // _isLoading = false;
+      // notifyListeners();
+
+      // print("response $response");
+
+      // if (response.statusCode == 200 || response.statusCode == 201) {
+      //   _userDetails =
+      //       response.data['user']; // assuming API returns a `user` object
+      //   _token = response.data['token'];
+      //   await saveUserData(
+      //     _userDetails?['id'],
+      //     token: _token,
+      //     userDetails: _userDetails,
+      //   );
+      //   print('✅ Login Successful: ${response.data}');
+      //   return {"success": true, "isVerified": true, "data": response.data};
+      // } else {
+      //   print('❌ Login Failed: ${response.data}');
+      //   return response.data;
+      // }
     } catch (e) {
       _isLoading = false;
       notifyListeners();

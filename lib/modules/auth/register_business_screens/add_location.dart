@@ -1,3 +1,4 @@
+import 'package:fluffy/modules/auth/model/location_file_model.dart';
 import 'package:fluffy/modules/auth/register_business_screens/application_sumbit.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
@@ -7,7 +8,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
-import 'package:fluffy/modules/auth/register_business_screens/model/location_model.dart';
 import 'package:fluffy/modules/auth/register_business_screens/provider/location_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -98,7 +98,7 @@ class _AddLocationState extends State<AddLocation> {
 
       final result = await provider.updateLocation(
         LocationModel(
-          businessOwnerId: userId!, // replace dynamic
+          businessId: userId!, // replace dynamic
           latitude: _selectedLocation!.latitude,
           longitude: _selectedLocation!.longitude,
           address: addressController.text,
