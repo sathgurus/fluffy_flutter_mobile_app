@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/booking/booking_requests.dart';
@@ -6,6 +8,7 @@ import 'package:fluffy/modules/dashoboard/widget/financial_overview.dart';
 import 'package:fluffy/modules/dashoboard/widget/revenue_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BusinessDashboard extends StatefulWidget {
   const BusinessDashboard({super.key});
@@ -15,9 +18,53 @@ class BusinessDashboard extends StatefulWidget {
 }
 
 class _BusinessDashboardState extends State<BusinessDashboard> {
+  Map? userDetails;
+  bool isLoading = true;
+
   @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  void loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      //final userId = prefs.getString("userId");
+      final userJson = prefs.getString('userDetails');
+      if (userJson != null) {
+        setState(() {
+          userDetails = jsonDecode(userJson); // Convert back to Map
+          isLoading = false;
+          print("Loaded user: $userDetails");
+        });
+      } else {
+        setState(() {
+          userDetails = null;
+          isLoading = false;
+        });
+      }
+    });
+  }
+
   Widget build(BuildContext context) {
     final authProvider = Provider.of<LoginProvider>(context, listen: false);
+    if (isLoading) {
+      // Show loader while data is loading
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
+
+    if (userDetails == null) {
+      // No user logged in
+      return Scaffold(
+        body: Center(child: Text("No user found. Please login.")),
+      );
+    }
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -25,7 +72,6 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
               Row(
                 children: [
                   const CircleAvatar(
@@ -37,7 +83,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Hello Sathguru,",
+                        "Hello ${userDetails!['name']},",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

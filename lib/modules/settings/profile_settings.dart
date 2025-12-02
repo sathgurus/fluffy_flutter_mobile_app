@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/login.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +13,50 @@ class ProfileSettings extends StatefulWidget {
 }
 
 class _ProfileSettingsState extends State<ProfileSettings> {
+  Map? userDetails;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  void loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userJson = prefs.getString('userDetails');
+
+    if (userJson != null) {
+      setState(() {
+        userDetails = jsonDecode(userJson); // Convert back to Map
+        isLoading = false;
+        print("Loaded user: $userDetails");
+      });
+    } else {
+      setState(() {
+        userDetails = null;
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      // Show loader while data is loading
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
+
+    if (userDetails == null) {
+      // No user logged in
+      return Scaffold(
+        body: Center(child: Text("No user found. Please login.")),
+      );
+    }
     return Scaffold(
       backgroundColor: AppColors.primary,
       appBar: AppBar(
@@ -21,14 +65,13 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-          //  Navigator.pop(context);
+            //  Navigator.pop(context);
           },
         ),
       ),
 
       body: Column(
         children: [
-          // ✅ Profile Top Section (Auto Height)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -40,9 +83,9 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        "Sathguru",
+                        "${userDetails!['name']}",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

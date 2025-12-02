@@ -1,4 +1,5 @@
 import 'package:fluffy/modules/auth/register_business_screens/widget/business_not_verify.dart';
+import 'package:fluffy/modules/auth/register_business_screens/widget/forgot_password_bs.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/auth/register.dart';
@@ -217,11 +218,12 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
-                          // TODO: Add forgot password logic
+                          authProvider.resetLoading();
+                          showForgotPasswordBottomSheet(context);
                         },
                         child: const Text(
                           "Forgot Password?",
-                          style: TextStyle(color: AppColors.textSecondary),
+                          style: TextStyle(color: AppColors.primary),
                         ),
                       ),
                     ),
@@ -237,18 +239,20 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                               widget.businessOwnerLogin,
                             );
 
-                            if (res['isVerified'] == false) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) => BusinessNotVerifiedScreen(
-                                        message:
-                                            "Your business is not verified. Please contact customer care.",
-                                      ),
-                                ),
-                              );
-                            }
+                            // if (res['isVerified'] == false) {
+                            //   Navigator.pushReplacement(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder:
+                            //           (_) => BusinessNotVerifiedScreen(
+                            //             message:
+                            //                 "Your business is not verified. Please contact customer care.",
+                            //           ),
+                            //     ),
+                            //   );
+                            // }
+
+                            res['isVerified'] = true;
 
                             if (res['isVerified']) {
                               if (!mounted) return;
@@ -308,6 +312,7 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                         ),
                         TextButton(
                           onPressed: () {
+                            authProvider.resetLoading();
                             Navigator.push(
                               context,
                               MaterialPageRoute(

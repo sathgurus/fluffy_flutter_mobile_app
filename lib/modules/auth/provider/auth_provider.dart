@@ -66,6 +66,48 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void resetLoading() {
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<bool> resetPassword(
+    String phone,
+    String password,
+    String confirmPassword,
+  ) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/users.json');
+
+      if (!await file.exists()) {
+        return false;
+      }
+
+      final data = jsonDecode(await file.readAsString());
+      bool found = false;
+
+      for (var user in data) {
+        if (user['phone'] == phone) {
+          user['password'] = password;
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        return false;
+      }
+
+      await file.writeAsString(jsonEncode(data));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<dynamic> login(String role) async {
     _isLoading = true;
     notifyListeners();
@@ -75,27 +117,23 @@ class LoginProvider with ChangeNotifier {
 
       print("users $users");
 
-      // Check phone
-      final user = users.firstWhere(
-        (u) => u['businessPhone'] == _phone,
-        orElse: () => {},
-      );
-      print("users $user");
+      final user = users.firstWhere((u) => u['businessPhone'] == _phone);
+
       if (user.isEmpty) {
         return {"success": false, "message": "Phone number not found"};
       }
 
       // Check password
-      if (user['password'] != _password) {
+      final userPassword = user['password'] ?? '';
+      if (userPassword != _password) {
         return {"success": false, "message": "Invalid password"};
       }
-
       // SUCCESS ✅
       _userDetails = user;
-      _userId = user['id'];
+      _userId = user['businessId'];
       _token = "LOCAL_LOGIN";
 
-      await saveUserData(_userId!, userDetails: user, token: _token);
+      await saveUserData(user['businessId'], userDetails: user, token: _token);
 
       _isLoading = false;
       notifyListeners();
