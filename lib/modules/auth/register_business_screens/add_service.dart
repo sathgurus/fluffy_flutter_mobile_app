@@ -134,10 +134,6 @@ class _AddServicesState extends State<AddServices> {
                           final name = item["service"];
                           final category = item["category"];
                           final basePrice = (item['basePrice'] ?? 0).toString();
-                          final discount =
-                              item['discountType'] == "Percentage"
-                                  ? "${item['discount']} %"
-                                  : " ₹ ${item['discount']}";
 
                           return Card(
                             color: Colors.white,
@@ -169,27 +165,12 @@ class _AddServicesState extends State<AddServices> {
                                           ),
                                         ),
                                         const SizedBox(height: 4),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                "Price: ₹$basePrice",
-                                                style: const TextStyle(
-                                                  color: Colors.black54,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                "Discount: $discount",
-                                                style: const TextStyle(
-                                                  color: Colors.black54,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                        Text(
+                                          "Price: ₹$basePrice",
+                                          style: const TextStyle(
+                                            color: Colors.black54,
+                                            fontSize: 13,
+                                          ),
                                         ),
                                       ],
                                     ),

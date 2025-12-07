@@ -6,7 +6,6 @@ import 'package:fluffy/modules/layout/widgets/bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,16 +27,11 @@ class _SplashScreenState extends State<SplashScreen> {
     await authProvider.loadUserData();
     await Future.delayed(const Duration(seconds: 2));
 
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId'); //
-
     final nav = NavigationService();
 
-     if (userId != null && userId.isNotEmpty) {
-      // User ID exists → go to home/dashboard
+    if (authProvider.token != null) {
       nav.pushReplacementPage(const BottomNav());
     } else {
-      // No user ID → check for admin build
       if (dotenv.env['BUILD'] == 'admin') {
         nav.pushReplacementNamed('/adminLogin');
       } else {

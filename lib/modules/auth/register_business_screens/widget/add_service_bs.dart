@@ -207,7 +207,7 @@ void openAddServiceBottomSheet(BuildContext context) {
                             underline: Container(),
                             value: discountType,
                             onChanged: (newValue) {
-                              setState(() => discountType = newValue!);
+                              discountType = newValue!;
                             },
                             items:
                                 taxOptions.map<DropdownMenuItem<String>>((
@@ -226,7 +226,7 @@ void openAddServiceBottomSheet(BuildContext context) {
                         ),
                       ),
                       keyboardType: TextInputType.number,
-                      onChanged: (newValue) {},
+                      onChanged: (value) {},
                     ),
 
                     const SizedBox(height: 20),
@@ -276,7 +276,7 @@ void openAddServiceBottomSheet(BuildContext context) {
                             if (finalPrice < 0) finalPrice = 0;
                           }
                           addServiceProvider.addService(
-                            parentId: parentId.toString(),
+                            parentId:parentId.toString(),
                             parent: parentName,
                             child: childName,
                             price: price,
