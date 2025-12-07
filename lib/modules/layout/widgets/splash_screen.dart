@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:fluffy/core/NavigationService.dart';
 import 'package:fluffy/modules/auth/login.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
@@ -24,39 +23,26 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   String firstRouts = '';
-
-  void _redirectToLogin(NavigationService nav) {
-    if (dotenv.env['BUILD'] == 'admin') {
-      nav.pushReplacementNamed('/adminLogin');
-    } else {
-      nav.pushReplacementNamed('/login');
-    }
-  }
-
   Future<void> _checkUser() async {
     final authProvider = Provider.of<LoginProvider>(context, listen: false);
     await authProvider.loadUserData();
     await Future.delayed(const Duration(seconds: 2));
 
     final prefs = await SharedPreferences.getInstance();
-
-    final String? userDetailsString = prefs.getString('userDetails');
+    final userId = prefs.getString('userId'); //
 
     final nav = NavigationService();
 
-    if (userDetailsString != null && userDetailsString.isNotEmpty) {
-      final Map<String, dynamic> userDetails = jsonDecode(userDetailsString);
-
-      final String userId = userDetails['businessId']?.toString() ?? '';
-
-      if (userId.isNotEmpty) {
-        // ✅ User exists → go to dashboard
-        nav.pushReplacementPage(const BottomNav());
-      } else {
-        _redirectToLogin(nav);
-      }
+     if (userId != null && userId.isNotEmpty) {
+      // User ID exists → go to home/dashboard
+      nav.pushReplacementPage(const BottomNav());
     } else {
-      _redirectToLogin(nav);
+      // No user ID → check for admin build
+      if (dotenv.env['BUILD'] == 'admin') {
+        nav.pushReplacementNamed('/adminLogin');
+      } else {
+        nav.pushReplacementNamed('/login');
+      }
     }
   }
 

@@ -234,36 +234,50 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
-                           if (_formKey.currentState!.validate()) {
-        final res = await authProvider.login(
-          widget.businessOwnerLogin,
-        );
+                          if (_formKey.currentState!.validate()) {
+                            final res = await authProvider.login(
+                              widget.businessOwnerLogin,
+                            );
 
-        if (!mounted) return;
+                            // if (res['isVerified'] == false) {
+                            //   Navigator.pushReplacement(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder:
+                            //           (_) => BusinessNotVerifiedScreen(
+                            //             message:
+                            //                 "Your business is not verified. Please contact customer care.",
+                            //           ),
+                            //     ),
+                            //   );
+                            // }
 
-        if (res['isVerified'] == true) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const BottomNav()),
-          );
+                            res['isVerified'] = true;
 
-          // ✅ REMOVE const here
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("${res['message']}"),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("${res['message']}"),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    },
+                            if (res['isVerified']) {
+                              if (!mounted) return;
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const BottomNav(),
+                                ),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Login successful.'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Login failed"),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           padding: const EdgeInsets.symmetric(vertical: 14),

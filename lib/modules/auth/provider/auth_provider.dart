@@ -108,185 +108,78 @@ class LoginProvider with ChangeNotifier {
     }
   }
 
-  // Future<dynamic> login(String role) async {
-  //   _isLoading = true;
-  //   notifyListeners();
-
-  //   try {
-  //     final users = await LocalUserHelper.readUsers();
-
-  //     final user = users.firstWhere(
-  //     (u) => u['businessPhone'] == _phone,
-  //     orElse: () => {},
-  //   );
-
-  //   if (user.isEmpty) {
-  //     _isLoading = false;
-  //     notifyListeners();
-
-  //     return {
-  //       "success": false,
-  //       "isVerified": false,
-  //       "message": "Phone number not found",
-  //     };
-  //   }
-
-  //   // ✅ Password checking
-  //   final userPassword = user['password'] ?? '';
-  //   if (userPassword != _password) {
-  //     _isLoading = false;
-  //     notifyListeners();
-
-  //     return {
-  //       "success": false,
-  //       "isVerified": false,
-  //       "message": "Invalid password",
-  //     };
-  //   }
-
-  //     // SUCCESS ✅
-  //     _userDetails = user;
-  //     _userId = user['businessId'];
-  //     _token = "LOCAL_LOGIN";
-
-  //     await saveUserData(user['businessId'], userDetails: user, token: _token);
-
-  //     _isLoading = false;
-  //     notifyListeners();
-
-  //     return { "success": true,
-  // "isVerified": true,
-  // "message": "Login successful",
-  // "data": user};
-
-  //     // // Create instance of ApiService
-  //     // final api = ApiService(dotenv.env['API_URL']!);
-
-  //     // // API call
-  //     // final response = await api.post('/auth/login', {
-  //     //   'businessPhone': _phone,
-  //     //   'password': _password,
-  //     //   'role': role,
-  //     // });
-
-  //     // _isLoading = false;
-  //     // notifyListeners();
-
-  //     // print("response $response");
-
-  //     // if (response.statusCode == 200 || response.statusCode == 201) {
-  //     //   _userDetails =
-  //     //       response.data['user']; // assuming API returns a `user` object
-  //     //   _token = response.data['token'];
-  //     //   await saveUserData(
-  //     //     _userDetails?['id'],
-  //     //     token: _token,
-  //     //     userDetails: _userDetails,
-  //     //   );
-  //     //   print('✅ Login Successful: ${response.data}');
-  //     //   return {"success": true, "isVerified": true, "data": response.data};
-  //     // } else {
-  //     //   print('❌ Login Failed: ${response.data}');
-  //     //   return response.data;
-  //     // }
-  //   } catch (e) {
-  //     _isLoading = false;
-  //     notifyListeners();
-  //     print('🚨 Login Error: $e');
-
-  //     return {
-  //       "success": false,
-  //       "isVerified": false,
-  //       "message": "Something went wrong",
-  //     };
-  //   }
-  // }
-
-
-  Future<Map<String, dynamic>> login(String role) async {
-  _isLoading = true;
-  notifyListeners();
-
-  try {
-    final users = await LocalUserHelper.readUsers();
-
-    // ✅ If no users exist at all
-    if (users.isEmpty) {
-      _isLoading = false;
-      notifyListeners();
-
-      return {
-        "success": false,
-        "isVerified": false,
-        "message": "No registered users found",
-      };
-    }
-
-    // ✅ Safe user search
-    final Map<String, dynamic> user = users.firstWhere(
-      (u) => u['businessPhone']?.toString() == _phone.toString(),
-      orElse: () => <String, dynamic>{},
-    );
-
-    // ✅ User not found
-    if (user.isEmpty) {
-      _isLoading = false;
-      notifyListeners();
-
-      return {
-        "success": false,
-        "isVerified": false,
-        "message": "Phone number not found",
-      };
-    }
-
-    // ✅ Password check
-    final String userPassword = user['password']?.toString() ?? '';
-    if (userPassword != _password.toString()) {
-      _isLoading = false;
-      notifyListeners();
-
-      return {
-        "success": false,
-        "isVerified": false,
-        "message": "Invalid password",
-      };
-    }
-
-    // ✅ SUCCESS LOGIN
-    _userDetails = user;
-    _userId = user['businessId']?.toString() ?? '';
-    _token = "LOCAL_LOGIN";
-
-    await saveUserData(
-      user['businessId'],
-      userDetails: user,
-      token: _token,
-    );
-
-    _isLoading = false;
+  Future<dynamic> login(String role) async {
+    _isLoading = true;
     notifyListeners();
 
-    return {
-      "success": true,
-      "isVerified": true,
-      "message": "Login successful",
-      "data": user,
-    };
+    try {
+      final users = await LocalUserHelper.readUsers();
 
-  } catch (e, stack) {
-    _isLoading = false;
-    notifyListeners();
+      print("users $users");
 
-    debugPrint("🚨 LOGIN ERROR: $e");
-    debugPrint(stack.toString());
+      final user = users.firstWhere((u) => u['businessPhone'] == _phone);
 
-    return {
-      "success": false,
-      "isVerified": false,
-      "message": "Something went wrong",
-    };
+      if (user.isEmpty) {
+        return {"success": false, "message": "Phone number not found"};
+      }
+
+      // Check password
+      final userPassword = user['password'] ?? '';
+      if (userPassword != _password) {
+        return {"success": false, "message": "Invalid password"};
+      }
+      // SUCCESS ✅
+      _userDetails = user;
+      _userId = user['businessId'];
+      _token = "LOCAL_LOGIN";
+
+      await saveUserData(user['businessId'], userDetails: user, token: _token);
+
+      _isLoading = false;
+      notifyListeners();
+
+      return {"success": true, "message": "Login successful", "data": user};
+
+      // // Create instance of ApiService
+      // final api = ApiService(dotenv.env['API_URL']!);
+
+      // // API call
+      // final response = await api.post('/auth/login', {
+      //   'businessPhone': _phone,
+      //   'password': _password,
+      //   'role': role,
+      // });
+
+      // _isLoading = false;
+      // notifyListeners();
+
+      // print("response $response");
+
+      // if (response.statusCode == 200 || response.statusCode == 201) {
+      //   _userDetails =
+      //       response.data['user']; // assuming API returns a `user` object
+      //   _token = response.data['token'];
+      //   await saveUserData(
+      //     _userDetails?['id'],
+      //     token: _token,
+      //     userDetails: _userDetails,
+      //   );
+      //   print('✅ Login Successful: ${response.data}');
+      //   return {"success": true, "isVerified": true, "data": response.data};
+      // } else {
+      //   print('❌ Login Failed: ${response.data}');
+      //   return response.data;
+      // }
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      print('🚨 Login Error: $e');
+
+      return {
+        "success": false,
+        "isVerified": false,
+        "message": "Something went wrong",
+      };
+    }
   }
-}
-
 }
