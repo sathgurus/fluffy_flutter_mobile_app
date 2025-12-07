@@ -216,10 +216,9 @@ Widget _field(
         return "$label is required";
       }
 
-      if (isPhoneField && v!.length != 10) {
+      if (isPhoneField && v!.isNotEmpty && v.length != 10) {
         return "Enter a valid 10-digit number";
       }
-
       return null;
     },
 
