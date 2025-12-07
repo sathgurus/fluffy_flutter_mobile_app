@@ -64,7 +64,7 @@ dev_dependencies:
 flutter_icons:
     android: true
     ios: true
-    image_path: "assets/icons/fluffy.jpeg" 
+    image_path: "assets/icons/fluffy2.jpeg" 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -82,6 +82,8 @@ flutter:
     - assets/fluffy.jpeg
     - assets/pet.jpg
     - assets/dog.jpg
+    - assets/fluffy1.jpeg
+    - assets/fluffy2.jpeg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

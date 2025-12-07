@@ -22,7 +22,7 @@ class _BottomNavState extends State<BottomNav> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<LoginProvider>(context, listen: false);
-    print("user detailes ${authProvider.userDetails}");
+    print("user detailes ${authProvider.token}");
 
     //authProvider.userDetails!['role'] = "end_user"; // to be removed later
 

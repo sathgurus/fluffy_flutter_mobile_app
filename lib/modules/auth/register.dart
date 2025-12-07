@@ -165,7 +165,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                               SnackBar(
                                 content: TextWidget(
                                   text:
-                                      "OTP verification failed. Please try again later.",
+                                      "Registration failed. Please try again later.",
                                 ),
                               ),
                             );

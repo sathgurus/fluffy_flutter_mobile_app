@@ -6,6 +6,7 @@ import 'package:fluffy/modules/layout/widgets/bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -23,13 +24,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
   String firstRouts = '';
   Future<void> _checkUser() async {
-    final authProvider = Provider.of<LoginProvider>(context, listen: false);
-    await authProvider.loadUserData();
-    await Future.delayed(const Duration(seconds: 2));
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
 
+    print("token $token");
     final nav = NavigationService();
 
-    if (authProvider.token != null) {
+    if (token != null) {
       nav.pushReplacementPage(const BottomNav());
     } else {
       if (dotenv.env['BUILD'] == 'admin') {

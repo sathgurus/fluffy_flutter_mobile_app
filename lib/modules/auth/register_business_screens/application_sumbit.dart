@@ -1,6 +1,7 @@
 import 'package:fluffy/modules/auth/login.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/dashoboard/home.dart';
+import 'package:fluffy/modules/shared/appbar_widget.dart';
 import 'package:flutter/material.dart';
 
 class ApplicationSubmittedScreen extends StatefulWidget {
@@ -25,21 +26,7 @@ class _ApplicationSubmittedScreenState
     ); // Approximation of the button color
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Pet Care',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            // Handle back button press
-          },
-        ),
-      ),
+      appBar: appBarWithBackButton(context, "Application subimt"),
       // Padding only for the main content area
       body: SingleChildScrollView(
         child: Padding(
@@ -84,10 +71,11 @@ class _ApplicationSubmittedScreenState
                       ),
                       // You would replace this with an Image.asset, Image.network, or an SvgPicture
                       // using the actual pet care illustration.
-                      child: const Center(
-                        child: Text(
-                          'Pet Illustration Here',
-                          style: TextStyle(color: Colors.grey),
+                      child: Center(
+                        child: Image.asset(
+                          'assets/fluffy1.jpeg',
+                          height: 150,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),

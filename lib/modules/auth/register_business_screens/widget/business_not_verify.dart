@@ -1,15 +1,36 @@
 import 'package:fluffy/modules/auth/login.dart';
+import 'package:fluffy/modules/shared/appbar_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class BusinessNotVerifiedScreen extends StatelessWidget {
+class BusinessNotVerifiedScreen extends StatefulWidget {
   final String message;
-
   const BusinessNotVerifiedScreen({super.key, required this.message});
+
+  @override
+  State<BusinessNotVerifiedScreen> createState() =>
+      _BusinessNotVerifiedScreenState();
+}
+
+class _BusinessNotVerifiedScreenState extends State<BusinessNotVerifiedScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _checkUser();
+  }
+
+  Future<void> _checkUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? userVerify = prefs.getString('userVerify');
+
+    print("token $userVerify");
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: appBarWithBackButton(context, "Business not verified..!"),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -33,7 +54,7 @@ class BusinessNotVerifiedScreen extends StatelessWidget {
 
             // 📌 Message from API
             Text(
-              message,
+              widget.message,
               style: TextStyle(fontSize: 16, color: Colors.black54),
               textAlign: TextAlign.center,
             ),

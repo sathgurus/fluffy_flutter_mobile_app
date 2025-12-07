@@ -12,6 +12,7 @@ class LoginProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _userId;
   String? _token;
+  Map<String, dynamic>? _userVerify;
 
   String get phone => _phone;
   String get password => _password;
@@ -19,17 +20,22 @@ class LoginProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get userId => _userId;
   String? get token => _token;
+  Map<String, dynamic>? get userVerify => _userVerify;
 
   Future<void> saveUserData(
     String userId, {
     String? token,
     Map<String, dynamic>? userDetails,
+    Map<String, dynamic>? userVerify,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('userId', userId);
     if (token != null) await prefs.setString('token', token);
     if (userDetails != null) {
       await prefs.setString('userDetails', jsonEncode(userDetails));
+    }
+    if(userVerify != null){
+      await prefs.setString('userVerify', jsonEncode(userVerify));
     }
   }
 
@@ -38,10 +44,15 @@ class LoginProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     _userId = prefs.getString('userId');
     _token = prefs.getString('token');
+   
 
     final userJson = prefs.getString('userDetails');
     if (userJson != null) {
       _userDetails = jsonDecode(userJson);
+    }
+     final userVerifyJson = prefs.getString('userVerify');
+    if (userVerifyJson != null) {
+      _userVerify = jsonDecode(userVerifyJson);
     }
 
     notifyListeners();
@@ -104,7 +115,6 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-    
       // Create instance of ApiService
       final api = ApiService(dotenv.env['API_URL']!);
 
@@ -118,7 +128,7 @@ class LoginProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
 
-      print("response $response");
+      print("response ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _userDetails =
@@ -133,6 +143,8 @@ class LoginProvider with ChangeNotifier {
         return {"success": true, "isVerified": true, "data": response.data};
       } else {
         print('❌ Login Failed: ${response.data}');
+        _userVerify = response.data['user'];
+        await saveUserData(_userVerify?['id'], userVerify: _userVerify);
         return response.data;
       }
     } catch (e) {
@@ -147,8 +159,4 @@ class LoginProvider with ChangeNotifier {
       };
     }
   }
-
-
-
-
 }
