@@ -1,5 +1,4 @@
 import 'package:fluffy/modules/auth/login.dart';
-import 'package:fluffy/modules/shared/appbar_widget.dart';
 import 'package:flutter/material.dart';
 
 class BusinessNotVerifiedScreen extends StatelessWidget {
@@ -11,7 +10,6 @@ class BusinessNotVerifiedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar:  appBarWithBackButton(context, "Business verify"),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(

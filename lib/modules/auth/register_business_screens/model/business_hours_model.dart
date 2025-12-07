@@ -1,31 +1,34 @@
 class DayHour {
-  String day;
+  final String day;
   bool isOpen;
   String? openTime;
   String? closeTime;
 
   DayHour({
     required this.day,
-    required this.isOpen,
+    this.isOpen = false,
     this.openTime,
     this.closeTime,
   });
 
-  factory DayHour.fromJson(Map<String, dynamic> json) => DayHour(
-        day: json['day'],
-        isOpen: json['isOpen'] ?? false,
-        openTime: json['openTime'],
-        closeTime: json['closeTime'],
-      );
+  factory DayHour.fromJson(Map<String, dynamic> json) {
+    return DayHour(
+      day: json['day'],
+      isOpen: json['isOpen'] ?? false,
+      openTime: json['openTime'],
+      closeTime: json['closeTime'],
+    );
+  }
 
-  Map<String, dynamic> toJson() => {
-        'day': day,
-        'isOpen': isOpen,
-        'openTime': openTime,
-        'closeTime': closeTime,
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      "day": day,
+      "isOpen": isOpen,
+      "openTime": openTime,
+      "closeTime": closeTime,
+    };
+  }
 }
-
 
 class BusinessHoursModel {
   final String businessId;
@@ -36,7 +39,9 @@ class BusinessHoursModel {
   factory BusinessHoursModel.fromJson(Map<String, dynamic> json) {
     return BusinessHoursModel(
       businessId: json['businessId'],
-      hours: (json['hours'] as List).map((e) => DayHour.fromJson(e)).toList(),
+      hours: (json['hours'] as List)
+          .map((e) => DayHour.fromJson(e))
+          .toList(),
     );
   }
 

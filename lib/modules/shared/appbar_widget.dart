@@ -15,18 +15,7 @@ AppBar appBarWithBackButton(BuildContext context, String label) {
     backgroundColor: AppColors.primary,
     elevation: 1,
     leading: IconButton(
-      onPressed:
-          () => {
-            if (Navigator.canPop(context))
-              {Navigator.pop(context)}
-            else
-              {
-                Navigator.pushReplacementNamed(
-                  context,
-                  '/home',
-                ), // fallback route
-              },
-          },
+      onPressed: () => Navigator.pop(context),
       icon: Icon(Icons.arrow_back, color: AppColors.whiteColor),
     ),
     actions: [IconButton(onPressed: () {}, icon: actionIcon)],

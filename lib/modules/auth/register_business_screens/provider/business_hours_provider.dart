@@ -1,4 +1,3 @@
-import 'package:fluffy/modules/auth/helper/business_hours_helper.dart';
 import 'package:fluffy/modules/auth/register_business_screens/model/business_hours_model.dart';
 import 'package:fluffy/modules/repositorey/common_api_repo.dart';
 import 'package:flutter/material.dart';
@@ -72,44 +71,21 @@ class BusinessHoursProvider extends ChangeNotifier {
   // ---- API: Save Business Hours ----
   Future<bool> submitHours(
     String businessId,
-     List<DayHour> hours,
+    List<Map<String, dynamic>> hours,
   ) async {
     final body = {"businessId": businessId, "hours": hours};
 
     try {
-      final list = await BusinessHoursFileHelper.readAll();
+      final api = ApiService(dotenv.env['API_URL']!);
 
-      final index = list.indexWhere((e) => e["businessId"] == businessId);
-
-      final data = {
-        "businessId": businessId,
-        "hours": hours.map((e) => e.toJson()).toList(),
-      };
-
-       if (index == -1) {
-      list.add(data);
-    } else {
-      list[index] = data;
-    }
-
-     await BusinessHoursFileHelper.writeAll(list);
-
-    
-    notifyListeners();
-
-    print("✅ Business Hours saved locally");
-    return true;
-
-      // final api = ApiService(dotenv.env['API_URL']!);
-
-      // final response = await api.post('/auth/business-hours', body);
-      // print("response $response");
-      // if (response.statusCode == 201 || response.statusCode == 200) {
-      //   return true;
-      // } else {
-      //   print("API error: ${response.statusMessage}");
-      //   return false;
-      // }
+      final response = await api.post('/auth/business-hours', body);
+      print("response $response");
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return true;
+      } else {
+        print("API error: ${response.statusMessage}");
+        return false;
+      }
     } catch (e) {
       print("Error saving hours: $e");
       return false;

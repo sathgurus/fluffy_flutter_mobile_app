@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:fluffy/modules/auth/helper/location_helper.dart';
-import 'package:fluffy/modules/auth/model/location_file_model.dart';
+import 'package:fluffy/modules/auth/register_business_screens/model/location_model.dart';
 import 'package:fluffy/modules/repositorey/common_api_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 class LocationProvider with ChangeNotifier {
   LocationModel? _location;
@@ -17,40 +17,18 @@ class LocationProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final list = await LocationFileHelper.readAll();
+       final api = ApiService(dotenv.env['API_URL']!);
 
-      final index = list.indexWhere(
-        (e) => e["businessId"] == data.businessId,
-      );
+      final response = await api.post('/auth/ping-location', data.toJson());
 
-      final localData = data.toJson();
+      final responseData = response;
+      print("response data location $responseData");
 
-      if (index == -1) {
-        list.add(localData);
+      if (response.statusCode == 200) {
+        return true;
       } else {
-        list[index] = localData; // overwrite
+        return false;
       }
-
-      await LocationFileHelper.writeAll(list);
-
-      _location = data;
-      _loading = false;
-      notifyListeners();
-
-      print("✅ Location saved locally");
-      return true;
-      //  final api = ApiService(dotenv.env['API_URL']!);
-
-      // final response = await api.post('/auth/ping-location', data.toJson());
-
-      // final responseData = response;
-      // print("response data location $responseData");
-
-      // if (response.statusCode == 200) {
-      //   return true;
-      // } else {
-      //   return false;
-      // }
     } catch (e) {
       print("Location update error: $e");
       return false;
