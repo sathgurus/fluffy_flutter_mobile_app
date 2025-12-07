@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:fluffy/modules/repositorey/common_api_repo.dart';
 import 'package:flutter/material.dart';
@@ -58,11 +57,54 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void resetLoading() {
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  // Future<bool> resetPassword(
+  //   String phone,
+  //   String password,
+  //   String confirmPassword,
+  // ) async {
+  //   try {
+  //     _isLoading = true;
+  //     notifyListeners();
+  //     final dir = await getApplicationDocumentsDirectory();
+  //     final file = File('${dir.path}/users.json');
+
+  //     if (!await file.exists()) {
+  //       return false;
+  //     }
+
+  //     final data = jsonDecode(await file.readAsString());
+  //     bool found = false;
+
+  //     for (var user in data) {
+  //       if (user['phone'] == phone) {
+  //         user['password'] = password;
+  //         found = true;
+  //         break;
+  //       }
+  //     }
+
+  //     if (!found) {
+  //       return false;
+  //     }
+
+  //     await file.writeAsString(jsonEncode(data));
+  //     return true;
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // }
+
   Future<dynamic> login(String role) async {
     _isLoading = true;
     notifyListeners();
 
     try {
+    
       // Create instance of ApiService
       final api = ApiService(dotenv.env['API_URL']!);
 
@@ -105,4 +147,8 @@ class LoginProvider with ChangeNotifier {
       };
     }
   }
+
+
+
+
 }

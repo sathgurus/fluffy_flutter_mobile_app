@@ -121,62 +121,7 @@ class RegisterProvider with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  // Future<bool> register(String registerType) async {
-  //   if (_password != _confirmPassword) {
-  //     debugPrint("Passwords do not match");
-  //     return false;
-  //   }
-
-  //   print("called $registerType");
-
-  //   isLoading = true;
-  //   notifyListeners();
-
-  //   try {
-  //     // Create instance of ApiService
-  //     final api = ApiService(dotenv.env['API_URL']!);
-
-  //     // API call
-  //     final response = await api.post('/register', {
-  //       'name': _name,
-  //       'phone': _phone,
-  //       'email': _email,
-  //       'password': _password,
-  //       'confirmPassword': _confirmPassword,
-  //       'role': registerType,
-  //       'termsAccepted': true,
-  //     });
-
-  //     isLoading = false;
-  //     notifyListeners();
-
-  //     debugPrint("response $response");
-
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       _userDetails =
-  //           response.data['user']; // assuming API returns a `user` object
-  //       _token = response.data['token'];
-  //       _isRegistered = true;
-  //       await saveUserData(
-  //         _userDetails?['id'],
-  //         token: _token,
-  //         userDetails: _userDetails,
-  //       );
-  //       debugPrint('✅ Registration Successful: ${response.data}');
-  //       return true;
-  //     } else {
-  //       debugPrint('❌ Registration Failed: ${response.data}');
-  //       return false;
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //     isLoading = false;
-  //     notifyListeners();
-  //     debugPrint('🚨 Register Error: $e');
-  //     return false;
-  //   }
-  // }
-
+  
   Future<bool> register(BusinessUserModel data) async {
     try {
       isLoading = true;
