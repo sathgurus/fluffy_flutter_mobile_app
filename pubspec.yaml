@@ -43,7 +43,6 @@ dependencies:
   geolocator: ^14.0.2
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
-  path_provider: ^2.1.2
 
 
 
@@ -83,7 +82,6 @@ flutter:
     - assets/fluffy.jpeg
     - assets/pet.jpg
     - assets/dog.jpg
-    - assets/servicesSampleData.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

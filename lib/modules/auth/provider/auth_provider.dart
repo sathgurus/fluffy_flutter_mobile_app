@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:fluffy/modules/repositorey/common_api_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginProvider with ChangeNotifier {
@@ -23,12 +21,6 @@ class LoginProvider with ChangeNotifier {
   String? get userId => _userId;
   String? get token => _token;
 
-  static Future<File> _getFile() async {
-    final dir = await getApplicationDocumentsDirectory();
-    return File("${dir.path}/users.json");
-  }
-
-
   Future<void> saveUserData(
     String userId, {
     String? token,
@@ -41,7 +33,6 @@ class LoginProvider with ChangeNotifier {
       await prefs.setString('userDetails', jsonEncode(userDetails));
     }
   }
-
 
   // Load user ID and token
   Future<void> loadUserData() async {

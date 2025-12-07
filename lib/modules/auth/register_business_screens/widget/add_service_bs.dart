@@ -1,6 +1,3 @@
-import 'package:fluffy/modules/auth/model/category_file_model.dart';
-import 'package:fluffy/modules/auth/model/default_service_file_model.dart';
-import 'package:fluffy/modules/auth/register_business_screens/model/service_model.dart';
 import 'package:fluffy/modules/auth/register_business_screens/provider/Add_service_provider.dart';
 import 'package:fluffy/modules/service/provider/service_provider.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
@@ -33,13 +30,16 @@ void openAddServiceBottomSheet(BuildContext context) {
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
-          final List<CategoryModel> parentList = sp.services;
-          print("parent list $parentList");
+          final parentList = sp.services;
 
-          final List<DefaultServiceModel> childList =
-              parentId == null
-                  ? []
-                  : parentList.firstWhere((p) => p.id == parentId).services;
+          final childList =
+              parentId != null
+                  ? parentList.firstWhere(
+                        (p) => p['_id'] == parentId,
+                        orElse: () => {},
+                      )['services'] ??
+                      []
+                  : [];
 
           return Padding(
             padding: MediaQuery.of(context).viewInsets,
@@ -93,8 +93,8 @@ void openAddServiceBottomSheet(BuildContext context) {
                       items:
                           parentList.map<DropdownMenuItem<String>>((cat) {
                             return DropdownMenuItem(
-                              value: cat.id,
-                              child: Text(cat.name),
+                              value: cat["_id"],
+                              child: Text(cat["name"]),
                             );
                           }).toList(),
                       onChanged: (val) {
@@ -109,14 +109,16 @@ void openAddServiceBottomSheet(BuildContext context) {
 
                     const SizedBox(height: 20),
 
-                    DropdownButtonFormField<String>(
+                    DropdownButtonFormField(
                       isExpanded: true,
                       value: childId,
                       items:
-                          childList.map<DropdownMenuItem<String>>((srv) {
-                            return DropdownMenuItem<String>(
-                              value: srv.id,
-                              child: Text(srv.name),
+                          (childList as List).map<DropdownMenuItem<String>>((
+                            srv,
+                          ) {
+                            return DropdownMenuItem(
+                              value: srv["_id"],
+                              child: Text(srv["name"]),
                             );
                           }).toList(),
                       onChanged: (val) {
@@ -244,16 +246,16 @@ void openAddServiceBottomSheet(BuildContext context) {
                             return;
                           }
                           final parent = parentList.firstWhere(
-                            (p) => p.id == parentId,
+                            (p) => p['_id'] == parentId,
                           );
                           final child = childList.firstWhere(
-                            (c) => c.id == childId,
+                            (c) => c['_id'] == childId,
                           );
 
                           String price = priceCtrl.text.trim();
                           String discount = discountCtrl.text.trim();
-                          String parentName = parent.name;
-                          String childName = child.name;
+                          String parentName = parent['name'];
+                          String childName = child['name'];
 
                           print("discount $discount");
 
@@ -276,7 +278,6 @@ void openAddServiceBottomSheet(BuildContext context) {
                             if (finalPrice < 0) finalPrice = 0;
                           }
                           addServiceProvider.addService(
-                            parentId:parentId.toString(),
                             parent: parentName,
                             child: childName,
                             price: price,
@@ -284,7 +285,7 @@ void openAddServiceBottomSheet(BuildContext context) {
                             discountType: discountType,
                             finalPrice: finalPrice.toStringAsFixed(2),
                             serviceType: selectedServiceType,
-                            serviceId: child.id.toString(),
+                            serviceId: child['_id'],
                           );
                           Navigator.pop(context); // close bottom sheet
                         },

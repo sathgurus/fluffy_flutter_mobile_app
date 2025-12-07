@@ -10,7 +10,6 @@ class BusinessUserModel {
   final String confirmPassword;
   final String role;
   final bool termsAccepted;
-  String? businessId;
 
   BusinessUserModel({
     required this.name,
@@ -23,39 +22,20 @@ class BusinessUserModel {
     required this.password,
     required this.confirmPassword,
     this.role = "owner",
-    required this.termsAccepted,
-    this.businessId,
+    required this.termsAccepted
   });
 
   Map<String, dynamic> toJson() => {
-    "name": name,
-    "businessName": businessName,
-    "businessType": businessType,
-    "businessPhone": businessPhone,
-    "altPhone": altPhone,
-    "businessEmail": businessEmail,
-    "businessWebsite": businessWebsite,
-    "password": password,
-    "confirmPassword": confirmPassword,
-    "role": role,
-    "termsAccepted": termsAccepted,
-    "businessId": businessId,
-  };
-
-  factory BusinessUserModel.fromJson(Map<String, dynamic> json) {
-    return BusinessUserModel(
-      name: json['name'],
-      businessName: json['businessName'],
-      businessType: json['businessType'],
-      businessPhone: json['businessPhone'],
-      altPhone: json['altPhone'],
-      businessEmail: json['businessEmail'],
-      businessWebsite: json['businessWebsite'],
-      password: json['password'],
-      confirmPassword: json['confirmPassword'],
-      role: json['role'],
-      termsAccepted: json['termsAccepted'],
-      businessId: json['businessId'],
-    );
-  }
+        "name": name,
+        "businessName": businessName,
+        "businessType": businessType,
+        "businessPhone": businessPhone,
+        "altPhone": altPhone,
+        "businessEmail": businessEmail,
+        "businessWebsite": businessWebsite,
+        "password": password,
+        "confirmPassword":confirmPassword,
+        "role":role,
+        "termsAccepted":termsAccepted
+      };
 }
