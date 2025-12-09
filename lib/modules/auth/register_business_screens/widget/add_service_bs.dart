@@ -209,7 +209,9 @@ void openAddServiceBottomSheet(BuildContext context) {
                             underline: Container(),
                             value: discountType,
                             onChanged: (newValue) {
-                              discountType = newValue!;
+                              setState(() {
+                                discountType = newValue!;
+                              });
                             },
                             items:
                                 taxOptions.map<DropdownMenuItem<String>>((

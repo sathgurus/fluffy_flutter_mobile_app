@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:fluffy/modules/settings/settings_business_hours.dart';
+import 'package:fluffy/modules/settings/settings_service.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/login.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +15,36 @@ class ProfileSettings extends StatefulWidget {
 }
 
 class _ProfileSettingsState extends State<ProfileSettings> {
+  Map<String, dynamic> user = {};
+  String userName = "";
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final userString = prefs.getString('userDetails');
+
+    if (userString != null) {
+      final decodedUser = jsonDecode(userString);
+
+      setState(() {
+        user = decodedUser;
+        userName = decodedUser['name'] ?? "User Name";
+      });
+    } else {
+      setState(() {
+        userName = "User Name";
+      });
+    }
+
+    print("Loaded User: $user");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +55,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-          //  Navigator.pop(context);
+            //  Navigator.pop(context);
           },
         ),
       ),
@@ -40,9 +74,9 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        "Sathguru",
+                        userName,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -109,12 +143,26 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                     SettingsTile(
                       icon: Icons.access_time_rounded,
                       title: "Business Hours",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SettingsBusinessHours(),
+                          ),
+                        );
+                      },
                     ),
                     SettingsTile(
                       icon: Icons.tag,
                       title: "Service & Pricing",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SettingsService(),
+                          ),
+                        );
+                      },
                     ),
                     SettingsTile(
                       icon: Icons.notifications_none,

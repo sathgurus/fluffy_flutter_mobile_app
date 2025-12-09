@@ -308,6 +308,7 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                         ),
                         TextButton(
                           onPressed: () {
+                            authProvider.resetLoading();
                             Navigator.push(
                               context,
                               MaterialPageRoute(

@@ -6,6 +6,11 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BusinessHoursProvider extends ChangeNotifier {
+
+   bool isLoading = false;
+  List businessHours = [];
+  String? errorMessage;
+  
   final List<String> weekDays = [
     "monday",
     "tuesday",
@@ -89,6 +94,33 @@ class BusinessHoursProvider extends ChangeNotifier {
     } catch (e) {
       print("Error saving hours: $e");
       return false;
+    }
+  }
+
+  Future<dynamic> fetchBusinessHours(String businessId) async {
+    try {
+      final api = ApiService(dotenv.env['API_URL']!);
+
+      final response = await api.getAll('/auth/business-hours/$businessId');
+      print("response $response");
+      if (response.statusCode == 200) {
+        businessHours = response.data['data']['hours'] ?? [];
+        print("Saved Business Hours: $businessHours");
+        errorMessage = null;
+        notifyListeners();
+        return true;
+      } else {
+        errorMessage = response.statusMessage;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 }
