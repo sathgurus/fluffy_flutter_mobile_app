@@ -6,6 +6,7 @@ class ServiceTile extends StatelessWidget {
   final String value;
   final String totalOrders;
   final Color color;
+  final String clientName;
 
   const ServiceTile({
     super.key,
@@ -14,6 +15,7 @@ class ServiceTile extends StatelessWidget {
     required this.value,
     required this.totalOrders,
     required this.color,
+    required this.clientName
   });
 
   @override
@@ -42,6 +44,8 @@ class ServiceTile extends StatelessWidget {
                     style:
                         const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
+                  Text("Client Name: $clientName"),
+                  const SizedBox(height: 5),
                   Text("Serviced Duration: $duration"),
                   const SizedBox(height: 5),
                   Text(

@@ -4,6 +4,7 @@ import 'package:fluffy/modules/auth/register_business_screens/business_verificat
 import 'package:fluffy/modules/auth/register_customer_screens/pet_name_screen.dart';
 import 'package:fluffy/modules/auth/register_customer_screens/pet_type_screen.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
+import 'package:fluffy/modules/shared/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -97,16 +98,15 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const BusinessVerification(),
+                                    builder:
+                                        (_) => const BusinessVerification(),
                                   ),
                                 );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'OTP verification successfully.',
-                                    ),
-                                    backgroundColor: Colors.green,
-                                  ),
+
+                                ToastificationShow.showToast(
+                                  context: context,
+                                  title: "OTP Verification",
+                                  description: "OTP verification successfully.",
                                 );
                               } else {
                                 Navigator.push(
@@ -117,8 +117,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                                 );
                               }
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Invalid OTP")),
+                              ToastificationShowError.showToast(
+                                context: context,
+                                description: "Invalid OTP",
                               );
                             }
                           } else {

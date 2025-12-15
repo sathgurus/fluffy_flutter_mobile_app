@@ -1,33 +1,38 @@
+import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class FinancialSummaryCard extends StatelessWidget {
-  const FinancialSummaryCard({super.key});
+  final double totalRevenue;
+  final int totalClients; // optional, you can pass dynamically
+  const FinancialSummaryCard({
+    required this.totalRevenue,
+    this.totalClients = 230, // default value
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xffC3A2FF), Color(0xffFF9AE1)],
-        ),
+        color: AppColors.primary,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: const [
-              _SummaryItem(title: "Total Revenue", value: "₹18500.00"),
-              _SummaryItem(title: "Total Clients", value: "230"),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Convert double to string
+              _SummaryItem(
+                title: "Total Revenue",
+                value: "₹ ${totalRevenue.toStringAsFixed(2)}",
+              ),
+              _SummaryItem(
+                title: "Total Clients",
+                value: totalClients.toString(),
+              ),
             ],
-          ),
-
-          const SizedBox(height: 8),
-
-          const Text(
-            "Receive ₹2,572.50 this month.",
-            style: TextStyle(color: Colors.white70),
           ),
         ],
       ),
@@ -44,6 +49,8 @@ class _SummaryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Text(title, style: const TextStyle(color: Colors.white)),
+        const SizedBox(height: 4),
         Text(
           value,
           style: const TextStyle(
@@ -52,8 +59,6 @@ class _SummaryItem extends StatelessWidget {
             fontSize: 22,
           ),
         ),
-        const SizedBox(height: 4),
-        Text(title, style: const TextStyle(color: Colors.white)),
       ],
     );
   }

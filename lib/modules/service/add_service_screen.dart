@@ -1,5 +1,6 @@
 import 'package:fluffy/modules/auth/register_business_screens/business_hours.dart';
 import 'package:fluffy/modules/auth/register_business_screens/widget/add_service_bs.dart';
+import 'package:fluffy/modules/settings/settings_service.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/register_business_screens/business_verification.dart';
 import 'package:fluffy/modules/auth/register_business_screens/model/service_model.dart';
@@ -11,14 +12,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AddServices extends StatefulWidget {
-  const AddServices({super.key});
+class AddServicesScreen extends StatefulWidget {
+  const AddServicesScreen({super.key});
 
   @override
-  State<AddServices> createState() => _AddServicesState();
+  State<AddServicesScreen> createState() => _AddServicesScreenState();
 }
 
-class _AddServicesState extends State<AddServices> {
+class _AddServicesScreenState extends State<AddServicesScreen> {
   final TextEditingController basePriceController = TextEditingController();
   final TextEditingController discountController = TextEditingController();
 
@@ -367,18 +368,18 @@ class _AddServicesState extends State<AddServices> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const BusinessHoursScreen(),
+                                builder: (_) => const SettingsService(),
                               ),
                             );
                           } else {
-                            ToastificationShow.showToast(
+                           ToastificationShow.showToast(
                               context: context,
                               title: "Add Services",
                               description: "Failed to add services",
                             );
                           }
                         } catch (e) {
-                          ToastificationShow.showToast(
+                         ToastificationShow.showToast(
                             context: context,
                             title: "Add Services",
                             description:

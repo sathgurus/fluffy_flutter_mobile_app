@@ -1,7 +1,11 @@
+import 'package:fluffy/core/NavigationService.dart';
 import 'package:fluffy/modules/auth/register_business_screens/business_login.dart';
 import 'package:fluffy/modules/auth/register_customer_screens/customer_login.dart';
+import 'package:fluffy/modules/layout/widgets/bottom_nav.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginTabsScreen extends StatefulWidget {
   const LoginTabsScreen({super.key});
@@ -19,6 +23,7 @@ class _LoginTabsScreenState extends State<LoginTabsScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() => setState(() {}));
+   // _checkUser();
   }
 
   @override
@@ -26,6 +31,25 @@ class _LoginTabsScreenState extends State<LoginTabsScreen>
     _tabController.dispose();
     super.dispose();
   }
+
+  // String firstRouts = '';
+  // Future<void> _checkUser() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   String? token = prefs.getString('token');
+
+  //   print("token $token");
+  //   final nav = NavigationService();
+
+  //   if (token != null) {
+  //     nav.pushReplacementPage(const BottomNav());
+  //   } else {
+  //     if (dotenv.env['BUILD'] == 'admin') {
+  //       nav.pushReplacementNamed('/adminLogin');
+  //     } else {
+  //       nav.pushReplacementNamed('/login');
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

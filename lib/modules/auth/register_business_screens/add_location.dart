@@ -2,6 +2,7 @@ import 'package:fluffy/modules/auth/register_business_screens/application_sumbit
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/shared/appbar_widget.dart';
+import 'package:fluffy/modules/shared/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -53,9 +54,12 @@ class _AddLocationState extends State<AddLocation> {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please enable location service")),
+        ToastificationShow.showToast(
+          context: context,
+          title: "Add Location",
+          description: "Please enable location service",
         );
+
         return;
       }
 
@@ -75,11 +79,10 @@ class _AddLocationState extends State<AddLocation> {
 
       mapController.move(_selectedLocation!, 15);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to get GPS location'),
-          backgroundColor: Colors.red,
-        ),
+      ToastificationShow.showToast(
+        context: context,
+        title: "Add Location",
+        description: "Failed to get GPS location",
       );
     }
   }
@@ -87,8 +90,10 @@ class _AddLocationState extends State<AddLocation> {
   // -------------------- Submit Location --------------------
   Future<void> submitLocation() async {
     if (_selectedLocation == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select a location on map!")),
+      ToastificationShow.showToast(
+        context: context,
+        title: "Add Location",
+        description: "Please select a location on map!",
       );
       return;
     }
@@ -106,11 +111,10 @@ class _AddLocationState extends State<AddLocation> {
       );
 
       if (result) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("✔ Location Added Successfully"),
-            backgroundColor: Colors.green,
-          ),
+        ToastificationShow.showToast(
+          context: context,
+          title: "Add Location",
+          description: "Location Added Successfully.",
         );
 
         Navigator.push(
@@ -119,11 +123,10 @@ class _AddLocationState extends State<AddLocation> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Location update failed. Try again."),
-          backgroundColor: Colors.red,
-        ),
+      ToastificationShow.showToast(
+        context: context,
+        title: "Add Loactions",
+        description: "Location update failed. Try again.",
       );
     }
   }

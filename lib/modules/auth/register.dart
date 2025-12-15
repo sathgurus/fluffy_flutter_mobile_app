@@ -5,6 +5,7 @@ import 'package:fluffy/modules/auth/provider/register_provider.dart';
 import 'package:fluffy/modules/shared/appbar_widget.dart';
 import 'package:fluffy/modules/shared/constant.dart';
 import 'package:fluffy/modules/shared/text_widget.dart';
+import 'package:fluffy/modules/shared/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -127,51 +128,60 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          BusinessUserModel user = BusinessUserModel(
-                            name: nameCtrl.text,
-                            businessName: businessNameCtrl.text,
-                            businessType: businessTypeCtrl.text,
-                            businessPhone: businessPhoneCtrl.text,
-                            altPhone: altPhoneCtrl.text,
-                            businessEmail: emailCtrl.text,
-                            businessWebsite: websiteCtrl.text,
-                            password: passwordCtrl.text,
-                            confirmPassword: confirmPasswordCtrl.text,
-                            termsAccepted: termsAccepted,
+                        FocusScope.of(context).unfocus();
+
+                        if (!_formKey.currentState!.validate()) {
+                          return;
+                        }
+
+                        if (!termsAccepted) {
+                          ToastificationShowError.showToast(
+                            context: context,
+                            description: "Please accept Terms & Conditions",
+                          );
+                          return;
+                        }
+
+                        BusinessUserModel user = BusinessUserModel(
+                          name: nameCtrl.text,
+                          businessName: businessNameCtrl.text,
+                          businessType: businessTypeCtrl.text,
+                          businessPhone: businessPhoneCtrl.text,
+                          altPhone: altPhoneCtrl.text,
+                          businessEmail: emailCtrl.text,
+                          businessWebsite: websiteCtrl.text,
+                          password: passwordCtrl.text,
+                          confirmPassword: confirmPasswordCtrl.text,
+                          termsAccepted: termsAccepted,
+                        );
+
+                        bool result = await provider.register(user);
+
+                        if (result) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => const OtpVerificationPage(
+                                    registerType: "owner",
+                                  ),
+                            ),
                           );
 
-                          bool result = await provider.register(user);
-
-                          if (result) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => const OtpVerificationPage(
-                                      registerType: "owner",
-                                    ),
-                              ),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: TextWidget(
-                                  text: "Business registered successfully.",
-                                ),
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: TextWidget(
-                                  text:
-                                      "Registration failed. Please try again later.",
-                                ),
-                              ),
-                            );
-                          }
+                          ToastificationShow.showToast(
+                            context: context,
+                            title: "Registration",
+                            description: "Business registered successfully.",
+                          );
+                        } else {
+                          ToastificationShowError.showToast(
+                            context: context,
+                            description:
+                                "Registration failed. Please try again later.",
+                          );
                         }
                       },
+
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         disabledBackgroundColor: Colors.grey[300],
@@ -194,79 +204,110 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
       ),
     );
   }
-}
 
-Widget _field(
-  String label,
-  TextEditingController ctrl, {
-  bool isPassword = false,
-  bool requiredField = true,
-}) {
-  bool isPhoneField = label.toLowerCase().contains(
-    "phone",
-  ); // detects phone & alternate phone
+  Widget _field(
+    String label,
+    TextEditingController ctrl, {
+    bool isPassword = false,
+    bool requiredField = true,
+    TextEditingController? compareWith,
+  }) {
+    bool isPhoneField = label.toLowerCase().contains("phone");
 
-  return TextFormField(
-    controller: ctrl,
-    obscureText: isPassword,
+    return TextFormField(
+      controller: ctrl,
+      obscureText: isPassword,
 
-    // === VALIDATION ===
-    validator: (v) {
-      if (requiredField && v!.isEmpty) {
-        return "$label is required";
-      }
+      validator: (v) {
+        if (requiredField && (v == null || v.isEmpty)) {
+          return "$label is required";
+        }
 
-      if (isPhoneField && v!.isNotEmpty && v.length != 10) {
-        return "Enter a valid 10-digit number";
-      }
-      return null;
-    },
+        if (isPhoneField && v!.isNotEmpty && v.length != 10) {
+          return "Enter a valid 10-digit number";
+        }
 
-    style: const TextStyle(fontSize: textSizeSMedium),
-    keyboardType: isPhoneField ? TextInputType.number : TextInputType.text,
-    maxLength: isPhoneField ? 10 : null,
-    inputFormatters:
-        isPhoneField ? [FilteringTextInputFormatter.digitsOnly] : [],
-    decoration: InputDecoration(
-      counterText: "",
-      label: RichText(
-        text: TextSpan(
-          text: label,
-          style: const TextStyle(
-            fontSize: textSizeSmall,
-            color: Colors.black87,
+        /// PASSWORD VALIDATION
+        if (isPassword && label == "Password") {
+          return validatePassword(v!);
+        }
+
+        /// CONFIRM PASSWORD VALIDATION
+        if (label == "Confirm Password") {
+          if (v != passwordCtrl.text) {
+            return "Passwords do not match";
+          }
+        }
+
+        return null;
+      },
+
+      keyboardType: isPhoneField ? TextInputType.number : TextInputType.text,
+      maxLength: isPhoneField ? 10 : null,
+      inputFormatters:
+          isPhoneField ? [FilteringTextInputFormatter.digitsOnly] : [],
+      decoration: InputDecoration(
+        counterText: "",
+        label: RichText(
+          text: TextSpan(
+            text: label,
+            style: const TextStyle(
+              fontSize: textSizeSmall,
+              color: Colors.black87,
+            ),
+            children:
+                requiredField
+                    ? const [
+                      TextSpan(text: " *", style: TextStyle(color: Colors.red)),
+                    ]
+                    : [],
           ),
-          children:
-              requiredField
-                  ? const [
-                    TextSpan(text: " *", style: TextStyle(color: Colors.red)),
-                  ]
-                  : [],
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: BorderSide(color: Colors.grey.shade400),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(color: AppColors.primary),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(color: Colors.red),
         ),
       ),
+    );
+  }
+}
 
-      filled: true,
-      fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(5),
-        borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
-      ),
-
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(5),
-        borderSide: BorderSide(color: appPrimaryColor, width: 1),
-      ),
-
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(5),
-        borderSide: const BorderSide(color: Colors.red, width: 1),
-      ),
-
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(5),
-        borderSide: const BorderSide(color: Colors.red, width: 1),
-      ),
-    ),
-  );
+String? validatePassword(String value) {
+  if (value.isEmpty) {
+    return "Password is required";
+  }
+  if (value.length < 8) {
+    return "Password must be at least 8 characters";
+  }
+  if (!RegExp(r'[A-Z]').hasMatch(value)) {
+    return "Password must contain 1 uppercase letter";
+  }
+  if (!RegExp(r'[a-z]').hasMatch(value)) {
+    return "Password must contain 1 lowercase letter";
+  }
+  if (!RegExp(r'[0-9]').hasMatch(value)) {
+    return "Password must contain 1 number";
+  }
+  if (!RegExp(r'[!@#\$&*~]').hasMatch(value)) {
+    return "Password must contain 1 special character";
+  }
+  return null;
 }

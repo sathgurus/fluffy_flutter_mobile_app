@@ -11,53 +11,91 @@ class AddServiceProvider with ChangeNotifier {
   List<Map<String, dynamic>> finalSelectedServices = [];
   String? userId;
 
-  void addService({
+  void addOrUpdateService({
     required String parent, // category name
     required String child, // service name
     required String price, // base price
-    String? discount, // optional
-    String discountType = "", // % or ₹
-    required String finalPrice, // final calculated price
-    required String serviceType, // weekday/weekend
+    String? discount,
+    String discountType = "",
+    required String finalPrice,
+    required String serviceType,
     required String serviceId,
+    String? parentId,
   }) {
-    int categoryIndex = finalSelectedServices.indexWhere(
-      (item) => item['name'].toString() == parent,
+    /// 🔍 Find service index (EDIT MODE)
+    int serviceIndex = selectedServices.indexWhere(
+      (item) => item['_id'] == serviceId,
     );
 
-    // Build service object
-    Map<String, dynamic> serviceObject = {
-      "name": child,
-      "price": price,
-      "serviceType": serviceType,
-    };
-
-    print(" $serviceObject");
-
-    // Add discount ONLY if user entered a value
-    if (discount != null && discount.trim().isNotEmpty) {
-      serviceObject["discount"] = discount;
-    }
-
-    if (categoryIndex != -1) {
-      // Add to existing category
-      finalSelectedServices[categoryIndex]["services"].add(serviceObject);
-    } else {
-      // Create new category
-      finalSelectedServices.add({
-        "name": parent,
-        "services": [serviceObject],
-      });
-    }
-    selectedServices.add({
+    Map<String, dynamic> serviceData = {
       "_id": serviceId,
+      "parentId": parentId,
       "category": parent,
       "service": child,
       "basePrice": price,
       "discount": (discount ?? "").isEmpty ? "0" : discount,
       "discountType": (discount ?? "").isEmpty ? "" : discountType,
-      //"price": finalPrice,
-    });
+      "price": finalPrice,
+      "serviceType": serviceType,
+    };
+
+    if (serviceIndex != -1) {
+      selectedServices[serviceIndex] = serviceData;
+    } else {
+      selectedServices.add(serviceData);
+    }
+
+    int categoryIndex = finalSelectedServices.indexWhere(
+      (item) => item['name'] == parent,
+    );
+
+    Map<String, dynamic> childService = {
+      "serviceId": serviceId,
+      "name": child,
+      "finalPrice": finalPrice,
+      "price": price,
+      "discount": discount ?? "0",
+      "discountType": discountType,
+      "serviceType": serviceType,
+    };
+
+    if (categoryIndex != -1) {
+      int childIndex = finalSelectedServices[categoryIndex]["services"]
+          .indexWhere((s) => s["serviceId"] == serviceId);
+
+      if (childIndex != -1) {
+        /// UPDATE CHILD
+        finalSelectedServices[categoryIndex]["services"][childIndex] =
+            childService;
+      } else {
+        /// ADD CHILD
+        finalSelectedServices[categoryIndex]["services"].add(childService);
+      }
+    } else {
+      /// CREATE NEW CATEGORY
+      finalSelectedServices.add({
+        "name": parent,
+        "services": [childService],
+      });
+    }
+
+    notifyListeners();
+  }
+
+  void deleteService(String serviceId) {
+    selectedServices.removeWhere((item) => item['_id'] == serviceId);
+
+    for (int i = finalSelectedServices.length - 1; i >= 0; i--) {
+      final category = finalSelectedServices[i];
+
+      category['services'].removeWhere(
+        (service) => service['serviceId'] == serviceId,
+      );
+
+      if (category['services'].isEmpty) {
+        finalSelectedServices.removeAt(i);
+      }
+    }
 
     notifyListeners();
   }

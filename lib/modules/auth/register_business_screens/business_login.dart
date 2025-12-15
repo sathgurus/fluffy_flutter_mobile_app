@@ -4,6 +4,7 @@ import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/auth/register.dart';
 import 'package:fluffy/modules/layout/widgets/bottom_nav.dart';
 import 'package:fluffy/modules/shared/text_widget.dart';
+import 'package:fluffy/modules/shared/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -258,18 +259,15 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                                   builder: (_) => const BottomNav(),
                                 ),
                               );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Login successful.'),
-                                  backgroundColor: Colors.green,
-                                ),
+                              ToastificationShow.showToast(
+                                context: context,
+                                title: "Login",
+                                description: "Login successfully.",
                               );
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Login failed"),
-                                  backgroundColor: Colors.red,
-                                ),
+                              ToastificationShowError.showToast(
+                                context: context,
+                                description: "Login failed.",
                               );
                             }
                           }

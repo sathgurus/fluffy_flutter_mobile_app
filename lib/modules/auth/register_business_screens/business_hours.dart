@@ -4,6 +4,7 @@ import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/shared/appbar_widget.dart';
 import 'package:fluffy/modules/shared/constant.dart';
 import 'package:fluffy/modules/shared/text_widget.dart';
+import 'package:fluffy/modules/shared/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -340,11 +341,10 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                       hours,
                     );
                     if (result) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("✅ Business Hours Added Successfully"),
-                          backgroundColor: Colors.green,
-                        ),
+                      ToastificationShow.showToast(
+                        context: context,
+                        title: "Business Hours",
+                        description: "Business Hours Added Successfully",
                       );
 
                       Navigator.push(
@@ -353,11 +353,10 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                       );
                     }
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Failed to add business hours"),
-                        backgroundColor: Colors.red,
-                      ),
+                    ToastificationShow.showToast(
+                      context: context,
+                      title: "Business Hours",
+                      description: "Failed to add business hours",
                     );
                   }
                 },

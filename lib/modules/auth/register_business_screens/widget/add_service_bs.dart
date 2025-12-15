@@ -3,10 +3,15 @@ import 'package:fluffy/modules/service/provider/service_provider.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/shared/constant.dart';
 import 'package:fluffy/modules/shared/text_widget.dart';
+import 'package:fluffy/modules/shared/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void openAddServiceBottomSheet(BuildContext context) {
+void openAddServiceBottomSheet(
+  BuildContext context, {
+  bool isEdit = false,
+  Map<String, dynamic>? item,
+}) {
   final sp = Provider.of<ServiceProvider>(context, listen: false);
   final addServiceProvider = Provider.of<AddServiceProvider>(
     context,
@@ -15,19 +20,30 @@ void openAddServiceBottomSheet(BuildContext context) {
 
   String? parentId;
   String? childId;
-  TextEditingController priceCtrl = TextEditingController();
-  TextEditingController discountCtrl = TextEditingController();
+
+  final TextEditingController priceCtrl = TextEditingController();
+  final TextEditingController discountCtrl = TextEditingController();
+
   String discountType = "Percentage";
   List<String> taxOptions = ['Percentage', 'Amount'];
   String selectedServiceType = "weekday";
 
+  if (isEdit) {
+    print("item show $item");
+    parentId = item!['parentId'];
+    childId = item['_id'];
+    discountType = item['discountType'];
+    priceCtrl.text = item['basePrice'];
+    discountCtrl.text = item['discount'];
+  }
+
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    shape: RoundedRectangleBorder(
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-    builder: (context) {
+    builder: (_) {
       return StatefulBuilder(
         builder: (context, setState) {
           final parentList = sp.services;
@@ -44,13 +60,7 @@ void openAddServiceBottomSheet(BuildContext context) {
           return Padding(
             padding: MediaQuery.of(context).viewInsets,
             child: SingleChildScrollView(
-              child: Container(
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
+              child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -71,25 +81,28 @@ void openAddServiceBottomSheet(BuildContext context) {
                     Row(
                       children: [
                         Expanded(
-                          child: TextWidget(
-                            text: "Add Services",
-                            fontSize: textSizeNormal,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black87,
+                          child: Text(
+                            isEdit ? "Add Service" : "Edit Service",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                        Icon(Icons.close, color: Colors.grey),
+                        InkWell(
+                          onTap: () => Navigator.pop(context),
+                          child: const Icon(Icons.close),
+                        ),
                       ],
                     ),
 
-                    const SizedBox(height: 10),
+                    const Divider(),
 
-                    const Divider(thickness: 0.5, color: Colors.grey),
-                    const SizedBox(height: 10),
-
-                    DropdownButtonFormField(
+                    /// CATEGORY
+                    DropdownButtonFormField<String>(
                       isExpanded: true,
                       value: parentId,
+                      decoration: _decoration("Select Category"),
                       items:
                           parentList.map<DropdownMenuItem<String>>((cat) {
                             return DropdownMenuItem(
@@ -103,15 +116,15 @@ void openAddServiceBottomSheet(BuildContext context) {
                           childId = null;
                         });
                       },
-
-                      decoration: dropdownDecoration("Select Category"),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
 
-                    DropdownButtonFormField(
+                    /// SERVICE
+                    DropdownButtonFormField<String>(
                       isExpanded: true,
                       value: childId,
+                      decoration: _decoration("Select Service"),
                       items:
                           (childList as List).map<DropdownMenuItem<String>>((
                             srv,
@@ -121,64 +134,46 @@ void openAddServiceBottomSheet(BuildContext context) {
                               child: Text(srv["name"]),
                             );
                           }).toList(),
-                      onChanged: (val) {
-                        setState(() => childId = val);
-                      },
-                      decoration: dropdownDecoration("Select Service"),
+                      onChanged: (val) => setState(() => childId = val),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
 
-                    TextWidget(
-                      text: "Service Type",
-                      fontWeight: FontWeight.w400,
-                      fontSize: textSizeSMedium,
-                    ),
-                    const SizedBox(height: 5),
+                    /// SERVICE TYPE
+                    const Text("Service Type"),
                     Row(
                       children: [
                         Radio(
                           value: "weekday",
                           groupValue: selectedServiceType,
-                          onChanged: (value) {
-                            setState(
-                              () => selectedServiceType = value.toString(),
-                            );
-                          },
                           activeColor: AppColors.primary,
+                          onChanged:
+                              (v) => setState(
+                                () => selectedServiceType = v.toString(),
+                              ),
                         ),
                         const Text("Weekday"),
-
-                        const SizedBox(width: 20),
-
                         Radio(
                           value: "weekend",
                           groupValue: selectedServiceType,
-                          onChanged: (value) {
-                            setState(
-                              () => selectedServiceType = value.toString(),
-                            );
-                          },
                           activeColor: AppColors.primary,
+                          onChanged:
+                              (v) => setState(
+                                () => selectedServiceType = v.toString(),
+                              ),
                         ),
                         const Text("Weekend"),
                       ],
                     ),
-                    const SizedBox(height: 20),
+
+                    /// PRICE
                     TextField(
                       controller: priceCtrl,
                       keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        label: TextWidget(text: "Price"),
-                        border: OutlineInputBorder(),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
-                        ),
-                      ),
+                      decoration: _decoration("Base Price"),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
 
                     TextFormField(
                       controller: discountCtrl,
@@ -199,8 +194,7 @@ void openAddServiceBottomSheet(BuildContext context) {
                               left: BorderSide(color: Colors.grey, width: 1.0),
                             ),
                           ),
-
-                          //height: 10,
+                          // height: 10,
                           padding: const EdgeInsets.symmetric(horizontal: 3),
                           margin: const EdgeInsets.only(right: 5),
                           width: MediaQuery.of(context).size.width * 0.3,
@@ -235,18 +229,73 @@ void openAddServiceBottomSheet(BuildContext context) {
 
                     const SizedBox(height: 20),
 
+                    /// ADD BUTTON
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
                         onPressed: () {
+                          /// VALIDATIONS
                           if (parentId == null || childId == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("Select category & service"),
-                              ),
+                            ToastificationShowError.showToast(
+                              context: context,
+                              description: "Select category and service",
                             );
                             return;
                           }
+
+                          if (priceCtrl.text.isEmpty) {
+                            ToastificationShowError.showToast(
+                              context: context,
+                              description: "Enter base price",
+                            );
+                            return;
+                          }
+
+                          final basePrice =
+                              double.tryParse(priceCtrl.text) ?? 0;
+
+                          if (basePrice <= 0) {
+                            ToastificationShowError.showToast(
+                              context: context,
+                              description: "Price must be greater than 0",
+                            );
+                            return;
+                          }
+
+                          double finalPrice = basePrice;
+
+                          if (discountCtrl.text.isNotEmpty) {
+                            final discount =
+                                double.tryParse(discountCtrl.text) ?? 0;
+
+                            if (discountType == "Percentage") {
+                              if (discount > 99) {
+                                ToastificationShowError.showToast(
+                                  context: context,
+                                  description:
+                                      "Percentage discount must be 99 or less",
+                                );
+                                return;
+                              }
+                              finalPrice =
+                                  basePrice - (basePrice * discount / 100);
+                            } else {
+                              if (discount >= basePrice) {
+                                ToastificationShowError.showToast(
+                                  context: context,
+                                  description:
+                                      "Discount amount must be less than price",
+                                );
+                                return;
+                              }
+                              finalPrice = basePrice - discount;
+                            }
+                          }
+
                           final parent = parentList.firstWhere(
                             (p) => p['_id'] == parentId,
                           );
@@ -254,58 +303,28 @@ void openAddServiceBottomSheet(BuildContext context) {
                             (c) => c['_id'] == childId,
                           );
 
-                          String price = priceCtrl.text.trim();
-                          String discount = discountCtrl.text.trim();
-                          String parentName = parent['name'];
-                          String childName = child['name'];
-
-                          print("discount $discount");
-
-                          if (price.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Enter base price")),
-                            );
-                            return;
-                          }
-
-                          double finalPrice = double.parse(price);
-                          if (discount.isNotEmpty) {
-                            double discountVal = double.parse(discount);
-                            if (discountType == 'Percentage') {
-                              finalPrice =
-                                  finalPrice - (finalPrice * discountVal / 100);
-                            } else {
-                              finalPrice -= discountVal;
-                            }
-                            if (finalPrice < 0) finalPrice = 0;
-                          }
-                          addServiceProvider.addService(
-                            parent: parentName,
-                            child: childName,
-                            price: price,
-                            discount: discount,
+                          addServiceProvider.addOrUpdateService(
+                            parent: parent['name'],
+                            child: child['name'],
+                            price: basePrice.toString(),
+                            discount: discountCtrl.text,
                             discountType: discountType,
                             finalPrice: finalPrice.toStringAsFixed(2),
                             serviceType: selectedServiceType,
                             serviceId: child['_id'],
+                            parentId: parentId,
                           );
-                          Navigator.pop(context); // close bottom sheet
+
+                          Navigator.pop(context);
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          padding: EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: Text(
+                        child: const Text(
                           "+ Add",
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -317,10 +336,11 @@ void openAddServiceBottomSheet(BuildContext context) {
   );
 }
 
-InputDecoration dropdownDecoration(String lable) {
+/// INPUT DECORATION
+InputDecoration _decoration(String label) {
   return InputDecoration(
-    label: TextWidget(text: lable),
-    border: OutlineInputBorder(),
+    labelText: label,
+    border: const OutlineInputBorder(),
     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
   );
 }

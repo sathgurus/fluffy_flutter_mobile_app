@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:fluffy/modules/settings/settings_business_hours.dart';
 import 'package:fluffy/modules/settings/settings_service.dart';
@@ -17,6 +18,7 @@ class ProfileSettings extends StatefulWidget {
 class _ProfileSettingsState extends State<ProfileSettings> {
   Map<String, dynamic> user = {};
   String userName = "";
+  String? userShopLogo;
 
   @override
   void initState() {
@@ -24,9 +26,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     loadUserData();
   }
 
-  Future<void> loadUserData() async {
+   Future<void> loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-
     final userString = prefs.getString('userDetails');
 
     if (userString != null) {
@@ -34,17 +35,35 @@ class _ProfileSettingsState extends State<ProfileSettings> {
 
       setState(() {
         user = decodedUser;
-        userName = decodedUser['name'] ?? "User Name";
+        userName = decodedUser['name'] ?? "User";
+        userShopLogo = decodedUser['shopVerification']?['shopLogo'];
       });
-    } else {
-      setState(() {
-        userName = "User Name";
-      });
-    }
 
-    print("Loaded User: $user");
+      print("User Data Loaded: $userShopLogo");
+
+      // ✅ CLEAN INVALID CACHE PATH
+      if (userShopLogo != null && !File(userShopLogo!).existsSync()) {
+        debugPrint("Invalid image path removed");
+        userShopLogo = null;
+      }
+    }
   }
 
+  /// ✅ IMAGE PROVIDER (100% SAFE)
+  ImageProvider shopImageProvider(String? path) {
+    if (path == null || path.isEmpty) {
+      return const AssetImage("assets/fluffy.jpeg");
+    }
+
+    if (path.startsWith("http")) {
+      return NetworkImage(path);
+    }
+
+    final file = File(path);
+    if (file.existsSync()) return FileImage(file);
+
+    return const AssetImage("assets/fluffy.jpeg");
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,16 +111,17 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                       Row(
                         children: [
                           _MiniTag(label: "1 Store"),
-                          SizedBox(width: 8),
-                          _MiniTag(label: "12 Services"),
+                          // SizedBox(width: 8),
+                          // _MiniTag(label: "12 Services"),
                         ],
                       ),
                     ],
                   ),
                 ),
-                const CircleAvatar(
+               CircleAvatar(
                   radius: 28,
-                  backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
+                  backgroundImage: shopImageProvider(userShopLogo),
+                  backgroundColor: Colors.white,
                 ),
               ],
             ),

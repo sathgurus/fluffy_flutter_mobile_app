@@ -5,6 +5,7 @@ import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/shared/appbar_widget.dart';
 import 'package:fluffy/modules/shared/constant.dart';
 import 'package:fluffy/modules/shared/text_widget.dart';
+import 'package:fluffy/modules/shared/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -283,8 +284,10 @@ class _BusinessVerificationState extends State<BusinessVerification> {
     }
 
     if (provider.verificationData.logoUrl == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Business logo is required")),
+      ToastificationShow.showToast(
+        context: context,
+        title: "Business Logo",
+        description: "Business logo is required",
       );
       return;
     }
@@ -293,12 +296,17 @@ class _BusinessVerificationState extends State<BusinessVerification> {
 
     if (result) {
       Navigator.push(context, MaterialPageRoute(builder: (_) => AddServices()));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Business verification successfully.")),
+
+      ToastificationShow.showToast(
+        context: context,
+        title: "Business Details",
+        description: "Business details added successfully.",
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Business verification failed")),
+      ToastificationShow.showToast(
+        context: context,
+        title: "Business Details",
+        description: "Business verification failed",
       );
     }
   }

@@ -2,6 +2,7 @@ import 'package:fluffy/modules/auth/register_business_screens/provider/business_
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/shared/appbar_widget.dart';
 import 'package:fluffy/modules/shared/text_widget.dart';
+import 'package:fluffy/modules/shared/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,21 +15,50 @@ class SettingsBusinessHours extends StatefulWidget {
 }
 
 class _SettingsBusinessHoursState extends State<SettingsBusinessHours> {
-
   TimeOfDay commonStartTime = const TimeOfDay(hour: 9, minute: 0);
-  TimeOfDay commonEndTime   = const TimeOfDay(hour: 20, minute: 0);
+  TimeOfDay commonEndTime = const TimeOfDay(hour: 20, minute: 0);
 
   String? userId;
   bool _apiApplied = false;
 
   final List<Map<String, dynamic>> hours = [
-    {"day": "monday",    "isOpen": true,  "openTime": "09:00 AM", "closeTime": "08:00 PM"},
-    {"day": "tuesday",   "isOpen": true,  "openTime": "09:00 AM", "closeTime": "08:00 PM"},
-    {"day": "wednesday", "isOpen": true,  "openTime": "09:00 AM", "closeTime": "08:00 PM"},
-    {"day": "thursday",  "isOpen": true,  "openTime": "09:00 AM", "closeTime": "08:00 PM"},
-    {"day": "friday",    "isOpen": true,  "openTime": "09:00 AM", "closeTime": "08:00 PM"},
-    {"day": "saturday",  "isOpen": true,  "openTime": "09:00 AM", "closeTime": "08:00 PM"},
-    {"day": "sunday",    "isOpen": false, "openTime": null,      "closeTime": null},
+    {
+      "day": "monday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
+    {
+      "day": "tuesday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
+    {
+      "day": "wednesday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
+    {
+      "day": "thursday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
+    {
+      "day": "friday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
+    {
+      "day": "saturday",
+      "isOpen": true,
+      "openTime": "09:00 AM",
+      "closeTime": "08:00 PM",
+    },
+    {"day": "sunday", "isOpen": false, "openTime": null, "closeTime": null},
   ];
 
   @override
@@ -58,8 +88,8 @@ class _SettingsBusinessHoursState extends State<SettingsBusinessHours> {
       );
 
       if (apiDay != null) {
-        hours[i]['isOpen']    = apiDay['isOpen'] ?? false;
-        hours[i]['openTime']  = apiDay['openTime'];
+        hours[i]['isOpen'] = apiDay['isOpen'] ?? false;
+        hours[i]['openTime'] = apiDay['openTime'];
         hours[i]['closeTime'] = apiDay['closeTime'];
       }
     }
@@ -76,14 +106,14 @@ class _SettingsBusinessHoursState extends State<SettingsBusinessHours> {
 
     if (openDay.isNotEmpty) {
       commonStartTime = parseTime(openDay['openTime']);
-      commonEndTime   = parseTime(openDay['closeTime']);
+      commonEndTime = parseTime(openDay['closeTime']);
     }
   }
 
   // ---------------- TIME UTILS ----------------
 
   String formatTimeOfDay(TimeOfDay tod) {
-    final hour   = tod.hourOfPeriod.toString().padLeft(2, '0');
+    final hour = tod.hourOfPeriod.toString().padLeft(2, '0');
     final minute = tod.minute.toString().padLeft(2, '0');
     final period = tod.period == DayPeriod.am ? "AM" : "PM";
     return "$hour:$minute $period";
@@ -91,10 +121,10 @@ class _SettingsBusinessHoursState extends State<SettingsBusinessHours> {
 
   TimeOfDay parseTime(String time) {
     final parts = time.split(' ');
-    final hm    = parts[0].split(':');
-    int hour    = int.parse(hm[0]);
-    final min   = int.parse(hm[1]);
-    final isPM  = parts[1] == 'PM';
+    final hm = parts[0].split(':');
+    int hour = int.parse(hm[0]);
+    final min = int.parse(hm[1]);
+    final isPM = parts[1] == 'PM';
 
     if (isPM && hour != 12) hour += 12;
     if (!isPM && hour == 12) hour = 0;
@@ -141,18 +171,15 @@ class _SettingsBusinessHoursState extends State<SettingsBusinessHours> {
   Future<void> pickTime(int index, bool isStart) async {
     if (!hours[index]['isOpen']) return;
 
-    final current = isStart
-        ? hours[index]['openTime']
-        : hours[index]['closeTime'];
+    final current =
+        isStart ? hours[index]['openTime'] : hours[index]['closeTime'];
 
-    final initial = current != null
-        ? parseTime(current)
-        : (isStart ? commonStartTime : commonEndTime);
+    final initial =
+        current != null
+            ? parseTime(current)
+            : (isStart ? commonStartTime : commonEndTime);
 
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: initial,
-    );
+    final picked = await showTimePicker(context: context, initialTime: initial);
 
     if (picked != null) {
       setState(() {
@@ -181,82 +208,78 @@ class _SettingsBusinessHoursState extends State<SettingsBusinessHours> {
 
     return Scaffold(
       appBar: appBarWithBackButton(context, "Business Hours"),
-      body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-
-                  // ----------- COMMON TIME -----------
-
-                  Row(
-                    children: const [
-                      Expanded(child: TextWidget(text: "Select Start Time")),
-                      Expanded(child: TextWidget(text: "Select End Time")),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: selectAllStartTime,
-                          child: timeBox(formatTimeOfDay(commonStartTime)),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: selectAllEndTime,
-                          child: timeBox(formatTimeOfDay(commonEndTime)),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // ----------- DAYS -----------
-
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: hours.length,
-                      itemBuilder: (_, index) => dayRow(hours[index], index),
+      body:
+          provider.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    // ----------- COMMON TIME -----------
+                    Row(
+                      children: const [
+                        Expanded(child: TextWidget(text: "Select Start Time")),
+                        Expanded(child: TextWidget(text: "Select End Time")),
+                      ],
                     ),
-                  ),
 
-                  // ----------- SUBMIT -----------
+                    const SizedBox(height: 10),
 
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final ok = await provider.submitHours(userId!, hours);
-                        if (ok) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              backgroundColor: Colors.green,
-                              content: Text("✅ Business Hours Saved"),
-                            ),
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(22),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: selectAllStartTime,
+                            child: timeBox(formatTimeOfDay(commonStartTime)),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: const Text("Continue"),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: selectAllEndTime,
+                            child: timeBox(formatTimeOfDay(commonEndTime)),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: 20),
+
+                    // ----------- DAYS -----------
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: hours.length,
+                        itemBuilder: (_, index) => dayRow(hours[index], index),
+                      ),
+                    ),
+
+                    // ----------- SUBMIT -----------
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final ok = await provider.submitHours(userId!, hours);
+                          if (ok) {
+                            ToastificationShow.showToast(
+                              context: context,
+                              title: "Business Hours",
+                              description: "Business Hours Added Successfully",
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(22),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        child: const Text("Continue"),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
     );
   }
 
@@ -324,10 +347,7 @@ class _SettingsBusinessHoursState extends State<SettingsBusinessHours> {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(value),
-          const Icon(Icons.access_time, size: 18),
-        ],
+        children: [Text(value), const Icon(Icons.access_time, size: 18)],
       ),
     );
   }

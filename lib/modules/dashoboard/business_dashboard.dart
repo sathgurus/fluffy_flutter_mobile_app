@@ -1,11 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:fluffy/modules/orders/model/order_model.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/auth/provider/auth_provider.dart';
 import 'package:fluffy/modules/booking/booking_requests.dart';
 import 'package:fluffy/modules/dashoboard/widget/daily_shanpshot_card.dart';
 import 'package:fluffy/modules/dashoboard/widget/financial_overview.dart';
 import 'package:fluffy/modules/dashoboard/widget/revenue_bar.dart';
+import 'package:fluffy/modules/shared/captilize.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BusinessDashboard extends StatefulWidget {
   const BusinessDashboard({super.key});
@@ -15,6 +21,55 @@ class BusinessDashboard extends StatefulWidget {
 }
 
 class _BusinessDashboardState extends State<BusinessDashboard> {
+  Map<String, dynamic> user = {};
+  String userName = "";
+  String? userShopLogo;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userString = prefs.getString('userDetails');
+
+    if (userString != null) {
+      final decodedUser = jsonDecode(userString);
+
+      setState(() {
+        user = decodedUser;
+        userName = decodedUser['name'] ?? "User";
+        userShopLogo = decodedUser['shopVerification']?['shopLogo'];
+      });
+
+      print("User Data Loaded: $userShopLogo");
+
+      // ✅ CLEAN INVALID CACHE PATH
+      if (userShopLogo != null && !File(userShopLogo!).existsSync()) {
+        debugPrint("Invalid image path removed");
+        userShopLogo = null;
+      }
+    }
+  }
+
+  /// ✅ IMAGE PROVIDER (100% SAFE)
+  ImageProvider shopImageProvider(String? path) {
+    if (path == null || path.isEmpty) {
+      return const AssetImage("assets/fluffy.jpeg");
+    }
+
+    if (path.startsWith("http")) {
+      return NetworkImage(path);
+    }
+
+    final file = File(path);
+    if (file.existsSync()) return FileImage(file);
+
+    return const AssetImage("assets/fluffy.jpeg");
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<LoginProvider>(context, listen: false);
@@ -28,16 +83,18 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
               // Header
               Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 28,
-                    //backgroundImage: ,
+                    backgroundImage: shopImageProvider(userShopLogo),
+                    backgroundColor: Colors.white,
                   ),
+
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Hello Sathguru,",
+                        "Hello ${capitalize(userName)},",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -81,7 +138,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                       // Text takes available space
                       Expanded(
                         child: const Text(
-                          "You have 5 new booking requests\nA quick look at the new requests you’ve received.",
+                          "You have 5 new booking requests.",
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       ),
@@ -120,7 +177,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                     vertical: 14,
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
                       SnapshotItem(
                         icon: Icons.calendar_today,
@@ -134,8 +191,8 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                       ),
                       SnapshotItem(
                         icon: Icons.currency_rupee,
-                        label: "Est. Revenue",
-                        value: "₹12,000",
+                        label: "Revenue",
+                        value: "13,000",
                       ),
                     ],
                   ),
@@ -180,7 +237,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                         SnapshotItem(
                           icon: Icons.people,
                           label: "Total Clients",
-                          value: "12",
+                          value: "20",
                         ),
                         SnapshotItem(
                           icon: Icons.person_outline,
@@ -190,7 +247,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                         SnapshotItem(
                           icon: Icons.currency_rupee,
                           label: "Total Revenue",
-                          value: "₹1,15,000",
+                          value: "13,000",
                         ),
                       ],
                     ),
@@ -212,50 +269,6 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
               const SizedBox(height: 10),
 
               TopServicesBarChart(),
-
-              // Card(
-              //   color: Colors.white,
-
-              //   shape: RoundedRectangleBorder(
-              //     borderRadius: BorderRadius.circular(12),
-              //   ),
-              //   elevation: 2,
-              //   child: Padding(
-              //     padding: const EdgeInsets.symmetric(
-              //       horizontal: 16,
-              //       vertical: 14,
-              //     ),
-              //     child: Column(
-              //       children: [
-              //         const RevenueBar(
-              //           title: "Grooming",
-              //           value: 10000,
-              //           color: Colors.teal,
-              //         ),
-              //         const RevenueBar(
-              //           title: "Spa",
-              //           value: 7500,
-              //           color: Colors.teal,
-              //         ),
-              //         const RevenueBar(
-              //           title: "Nail Clipping",
-              //           value: 5000,
-              //           color: Colors.teal,
-              //         ),
-              //         const RevenueBar(
-              //           title: "Service 4",
-              //           value: 4000,
-              //           color: Colors.teal,
-              //         ),
-              //         const RevenueBar(
-              //           title: "Service 5",
-              //           value: 3500,
-              //           color: Colors.teal,
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),
