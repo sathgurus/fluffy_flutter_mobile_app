@@ -8,6 +8,7 @@ import 'package:fluffy/modules/auth/register_business_screens/provider/business_
 import 'package:fluffy/modules/auth/register_business_screens/provider/business_verification_provider.dart';
 import 'package:fluffy/modules/auth/register_business_screens/provider/location_provider.dart';
 import 'package:fluffy/modules/service/provider/service_provider.dart';
+import 'package:fluffy/modules/settings/provider/profileProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -70,6 +71,7 @@ class _FluffyAppState extends State<FluffyApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (_) => AddServiceProvider()),
         ChangeNotifierProvider(create: (_) => BusinessVerificationProvider()),
         ChangeNotifierProvider(create: (_) => BusinessHoursProvider()),
+        ChangeNotifierProvider(create: (_) => Profileprovider())
         // 👇 Add other providers here if needed later
       ],
       child: FutureBuilder(

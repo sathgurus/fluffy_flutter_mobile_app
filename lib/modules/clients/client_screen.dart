@@ -54,10 +54,10 @@ class _ClientScreenState extends State<ClientScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return  Scaffold(
       appBar: appBarWithBackButton(context, "Clients"),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Column(
           children: [
             // Search bar
@@ -68,60 +68,58 @@ class _ClientScreenState extends State<ClientScreen> {
                 hintText: "Search Client Name",
                 prefixIcon: const Icon(Icons.search, size: 20),
                 filled: true,
-                fillColor: Colors.white,
-
-                isDense: true, // 🔑 reduces height
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 10, // adjust this (8–12 is ideal)
-                  horizontal: 12,
-                ),
-
+                fillColor: Colors.grey[100],
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade500,
-                    width: 0.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade500,
-                    width: 0.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade500,
-                    width: 0.8,
-                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
               ),
             ),
+            const SizedBox(height: 16),
 
-            SizedBox(height: 16),
             // List of clients
             Expanded(
-              child:
-                  filteredClients.isEmpty
-                      ? _noClientsFound()
-                      : ListView.separated(
-                        itemCount: filteredClients.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 10),
-                        itemBuilder: (context, index) {
-                          final client = filteredClients[index];
+              child: filteredClients.isEmpty
+                  ? _noClientsFound()
+                  : ListView.separated(
+                      itemCount: filteredClients.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        final client = filteredClients[index];
 
-                          return Card(
-                            color: AppColors.whiteColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                        return InkWell(
+                          onTap: () {
+                            // Navigate to client details
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.primary.withOpacity(0.05),
+                                  Colors.white,
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.1),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 4),
+                                )
+                              ],
                             ),
                             child: ListTile(
-                              contentPadding: const EdgeInsets.all(10),
+                              contentPadding: const EdgeInsets.all(16),
                               leading: CircleAvatar(
-                                radius: 24,
-                                backgroundColor: _getAvatarColor(client.name),
+                                radius: 28,
+                                backgroundColor:
+                                    _getAvatarColor(client.name).withOpacity(0.2),
                                 child: Text(
                                   client.name[0].toUpperCase(),
                                   style: TextStyle(
@@ -129,64 +127,40 @@ class _ClientScreenState extends State<ClientScreen> {
                                       _getAvatarColor(client.name),
                                     ),
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontSize: 20,
                                   ),
                                 ),
                               ),
                               title: Text(
                                 client.name,
                                 style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                              subtitle: Container(
+                                margin: const EdgeInsets.only(top: 6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  client.petDetails,
+                                  style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13),
                                 ),
                               ),
-                              subtitle: TextWidget(text: client.petDetails),
-
-                              onTap: () {
-                                // TODO: Navigate to booking details page
-                              },
+                              trailing: Icon(
+                                Icons.chevron_right,
+                                color: Colors.grey.shade400,
+                              ),
                             ),
-                          );
-                        },
-                      ),
-              // ListView.separated(
-              //   itemCount: filteredClients.length,
-              //   separatorBuilder:
-              //       (context, index) => SizedBox(height: 8),
-              //   itemBuilder: (context, index) {
-              //     final client = filteredClients[index];
-              //     return Card(
-              //       color: Colors.white,
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(5),
-              //       ),
-              //       child: Padding(
-              //         padding: EdgeInsets.all(5),
-              //         child: ListTile(
-              //           leading: CircleAvatar(
-              //             radius: 20,
-              //             backgroundColor:
-              //                 Colors.primaries[Random().nextInt(
-              //                   Colors.primaries.length,
-              //                 )],
-              //             child: Text(
-              //               client.name.isNotEmpty
-              //                   ? client.name[0].toUpperCase()
-              //                   : "?",
-              //               style: const TextStyle(
-              //                 fontSize: 14,
-              //                 fontWeight: FontWeight.bold,
-              //                 color: AppColors.whiteColor,
-              //               ),
-              //             ),
-              //           ),
-              //           title: TextWidget(text: client.name),
-              //           subtitle: TextWidget(text: client.petDetails),
-              //           onTap: () {},
-              //         ),
-              //       ),
-              //     );
-              //   },
-              // ),
+                          ),
+                        );
+                      },
+                    ),
             ),
           ],
         ),
@@ -230,7 +204,6 @@ Color _getAvatarColor(String name) {
   return colors[name.hashCode % colors.length];
 }
 
-// Text color for contrast
 Color _getTextColor(Color backgroundColor) {
   return backgroundColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
 }

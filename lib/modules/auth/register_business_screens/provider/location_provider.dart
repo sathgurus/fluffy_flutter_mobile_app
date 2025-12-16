@@ -4,7 +4,6 @@ import 'package:fluffy/modules/repositorey/common_api_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 class LocationProvider with ChangeNotifier {
   LocationModel? _location;
   bool _loading = false;
@@ -17,7 +16,7 @@ class LocationProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-       final api = ApiService(dotenv.env['API_URL']!);
+      final api = ApiService(dotenv.env['API_URL']!);
 
       final response = await api.post('/auth/ping-location', data.toJson());
 
@@ -25,16 +24,19 @@ class LocationProvider with ChangeNotifier {
       print("response data location $responseData");
 
       if (response.statusCode == 200) {
+        _loading = false;
+        notifyListeners();
         return true;
       } else {
+        _loading = false;
+        notifyListeners();
         return false;
       }
     } catch (e) {
       print("Location update error: $e");
+      _loading = false;
+      notifyListeners();
       return false;
     }
-
-    _loading = false;
-    notifyListeners();
   }
 }

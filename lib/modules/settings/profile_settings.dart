@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:fluffy/modules/settings/business_settings.dart';
+import 'package:fluffy/modules/settings/location_settings.dart';
 import 'package:fluffy/modules/settings/settings_business_hours.dart';
 import 'package:fluffy/modules/settings/settings_service.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
@@ -26,7 +28,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     loadUserData();
   }
 
-   Future<void> loadUserData() async {
+  Future<void> loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final userString = prefs.getString('userDetails');
 
@@ -64,6 +66,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
 
     return const AssetImage("assets/fluffy.jpeg");
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,14 +114,14 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                       Row(
                         children: [
                           _MiniTag(label: "1 Store"),
-                          // SizedBox(width: 8),
-                          // _MiniTag(label: "12 Services"),
+                          SizedBox(width: 8),
+                          _MiniTag(label: "Active 1"),
                         ],
                       ),
                     ],
                   ),
                 ),
-               CircleAvatar(
+                CircleAvatar(
                   radius: 28,
                   backgroundImage: shopImageProvider(userShopLogo),
                   backgroundColor: Colors.white,
@@ -158,7 +161,14 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                     SettingsTile(
                       icon: Icons.store,
                       title: "Business Information",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const BusinessSettings(),
+                          ),
+                        );
+                      },
                     ),
                     SettingsTile(
                       icon: Icons.access_time_rounded,
@@ -180,6 +190,18 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => const SettingsService(),
+                          ),
+                        );
+                      },
+                    ),
+                    SettingsTile(
+                      icon: Icons.location_pin,
+                      title: "Location",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const LocationSettings(),
                           ),
                         );
                       },
