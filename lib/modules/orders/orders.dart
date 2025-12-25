@@ -310,28 +310,33 @@ class _OrderScreenState extends State<OrdersScreen> {
                                   size: 28,
                                 ),
                               ),
-                              title: Text(
-                                booking.clientName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "${booking.service} • ${booking.petDetails}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const SizedBox(height: 4),
                                   Text(
-                                    "${booking.service} • ${booking.petDetails}",
-                                    style: const TextStyle(fontSize: 14),
+                                    booking.clientName,
+                                    style: const TextStyle(
+                                      //color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     booking.date,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
+                                    style: const TextStyle(fontSize: 12),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(

@@ -245,7 +245,7 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                                   builder:
                                       (_) => BusinessNotVerifiedScreen(
                                         message:
-                                            "Your business is not verified. Please contact customer care.",
+                                            "Your business verification is currently under review. Please try logging in again after 2 hours.",
                                       ),
                                 ),
                               );
