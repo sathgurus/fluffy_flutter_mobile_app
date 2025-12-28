@@ -21,21 +21,41 @@ void openAddServiceBottomSheet(
   String? parentId;
   String? childId;
 
-  final TextEditingController priceCtrl = TextEditingController();
-  final TextEditingController discountCtrl = TextEditingController();
+  bool isWeekdayEnabled = true;
+  bool isWeekendEnabled = false;
 
-  String discountType = "Percentage";
-  List<String> taxOptions = ['Percentage', 'Amount'];
-  String selectedServiceType = "weekday";
+  final weekdayPriceCtrl = TextEditingController();
+  final weekendPriceCtrl = TextEditingController();
 
-  if (isEdit) {
-    print("item show $item");
-    parentId = item!['parentId'];
+  final weekdayDiscountCtrl = TextEditingController();
+  final weekendDiscountCtrl = TextEditingController();
+
+  String weekdayDiscountType = "Percentage";
+  String weekendDiscountType = "Percentage";
+
+  List<String> discountTypes = ['Percentage', 'Amount'];
+
+  /// ---------------- EDIT MODE PREFILL ----------------
+  if (isEdit && item != null) {
+    parentId = item['parentId'];
     childId = item['_id'];
-    discountType = item['discountType'];
-    priceCtrl.text = item['basePrice'];
-    discountCtrl.text = item['discount'];
+
+    isWeekdayEnabled =
+        double.tryParse(item['weekdayPrice']?.toString() ?? '0')! > 0;
+    isWeekendEnabled =
+        double.tryParse(item['weekendPrice']?.toString() ?? '0')! > 0;
+
+    weekdayPriceCtrl.text = item['weekdayPrice']?.toString() ?? '';
+    weekendPriceCtrl.text = item['weekendPrice']?.toString() ?? '';
+
+    weekdayDiscountCtrl.text = item['weekdayDiscount']?.toString() ?? '0';
+    weekendDiscountCtrl.text = item['weekendDiscount']?.toString() ?? '0';
+
+    weekdayDiscountType = item['weekdayDiscountType'] ?? "Percentage";
+    weekendDiscountType = item['weekendDiscountType'] ?? "Percentage";
   }
+
+  /// ---------------------------------------------------
 
   showModalBottomSheet(
     context: context,
@@ -47,7 +67,6 @@ void openAddServiceBottomSheet(
       return StatefulBuilder(
         builder: (context, setState) {
           final parentList = sp.services;
-
           final childList =
               parentId != null
                   ? parentList.firstWhere(
@@ -57,35 +76,39 @@ void openAddServiceBottomSheet(
                       []
                   : [];
 
+          double applyDiscount({
+            required double price,
+            required double discount,
+            required String type,
+          }) {
+            if (discount <= 0) return price;
+
+            if (type == "Percentage") {
+              if (discount > 99) throw "Percentage must be ≤ 99";
+              return price - (price * discount / 100);
+            } else {
+              if (discount >= price) throw "Discount must be less than price";
+              return price - discount;
+            }
+          }
+
           return Padding(
             padding: MediaQuery.of(context).viewInsets,
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
+                    /// HEADER
                     Row(
                       children: [
                         Expanded(
                           child: Text(
-                            isEdit ? "Add Service" : "Edit Service",
-                            style: TextStyle(
+                            isEdit ? "Edit Service" : "Add Service",
+                            style: const TextStyle(
                               fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -95,24 +118,24 @@ void openAddServiceBottomSheet(
                         ),
                       ],
                     ),
-
                     const Divider(),
 
                     /// CATEGORY
                     DropdownButtonFormField<String>(
-                      isExpanded: true,
                       value: parentId,
                       decoration: _decoration("Select Category"),
                       items:
-                          parentList.map<DropdownMenuItem<String>>((cat) {
-                            return DropdownMenuItem(
-                              value: cat["_id"],
-                              child: Text(cat["name"]),
-                            );
-                          }).toList(),
-                      onChanged: (val) {
+                          parentList
+                              .map<DropdownMenuItem<String>>(
+                                (cat) => DropdownMenuItem(
+                                  value: cat['_id'],
+                                  child: Text(cat['name']),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (v) {
                         setState(() {
-                          parentId = val;
+                          parentId = v;
                           childId = null;
                         });
                       },
@@ -122,123 +145,124 @@ void openAddServiceBottomSheet(
 
                     /// SERVICE
                     DropdownButtonFormField<String>(
-                      isExpanded: true,
                       value: childId,
                       decoration: _decoration("Select Service"),
                       items:
-                          (childList as List).map<DropdownMenuItem<String>>((
-                            srv,
-                          ) {
-                            return DropdownMenuItem(
-                              value: srv["_id"],
-                              child: Text(srv["name"]),
-                            );
-                          }).toList(),
-                      onChanged: (val) => setState(() => childId = val),
+                          (childList as List)
+                              .map<DropdownMenuItem<String>>(
+                                (srv) => DropdownMenuItem(
+                                  value: srv['_id'],
+                                  child: Text(srv['name']),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (v) => setState(() => childId = v),
                     ),
 
                     const SizedBox(height: 16),
 
-                    /// SERVICE TYPE
-                    const Text("Service Type"),
-                    Row(
-                      children: [
-                        Radio(
-                          value: "weekday",
-                          groupValue: selectedServiceType,
-                          activeColor: AppColors.primary,
-                          onChanged:
-                              (v) => setState(
-                                () => selectedServiceType = v.toString(),
-                              ),
-                        ),
-                        const Text("Weekday"),
-                        Radio(
-                          value: "weekend",
-                          groupValue: selectedServiceType,
-                          activeColor: AppColors.primary,
-                          onChanged:
-                              (v) => setState(
-                                () => selectedServiceType = v.toString(),
-                              ),
-                        ),
-                        const Text("Weekend"),
-                      ],
+                    /// WEEKDAY
+                    CheckboxListTile(
+                      value: isWeekdayEnabled,
+                      onChanged: (v) => setState(() => isWeekdayEnabled = v!),
+                      title: const Text("Weekday"),
+                      controlAffinity: ListTileControlAffinity.leading,
                     ),
 
-                    /// PRICE
-                    TextField(
-                      controller: priceCtrl,
-                      keyboardType: TextInputType.number,
-                      decoration: _decoration("Base Price"),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    TextFormField(
-                      controller: discountCtrl,
-                      decoration: InputDecoration(
-                        label: TextWidget(text: "Discount"),
-                        border: const OutlineInputBorder(),
-                        suffixIconConstraints: const BoxConstraints(
-                          maxHeight: 18,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
-                        ),
-                        suffixIcon: Container(
-                          alignment: Alignment.center,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              left: BorderSide(color: Colors.grey, width: 1.0),
+                    if (isWeekdayEnabled) ...[
+                      TextField(
+                        controller: weekdayPriceCtrl,
+                        keyboardType: TextInputType.number,
+                        decoration: _decoration("Weekday Price"),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: weekdayDiscountCtrl,
+                              keyboardType: TextInputType.number,
+                              decoration: _decoration("Weekday Discount"),
                             ),
                           ),
-                          // height: 10,
-                          padding: const EdgeInsets.symmetric(horizontal: 3),
-                          margin: const EdgeInsets.only(right: 5),
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            underline: Container(),
-                            value: discountType,
-                            onChanged: (newValue) {
-                              setState(() {
-                                discountType = newValue!;
-                              });
-                            },
+                          const SizedBox(width: 8),
+                          DropdownButton<String>(
+                            value: weekdayDiscountType,
+                            onChanged:
+                                (v) => setState(() => weekdayDiscountType = v!),
                             items:
-                                taxOptions.map<DropdownMenuItem<String>>((
-                                  String value,
-                                ) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: TextWidget(
-                                      text: value,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: textSizeSmall2,
-                                    ),
-                                  );
-                                }).toList(),
+                                discountTypes
+                                    .map(
+                                      (e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Text(e),
+                                      ),
+                                    )
+                                    .toList(),
                           ),
-                        ),
+                        ],
                       ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {},
+                    ],
+
+                    const SizedBox(height: 16),
+
+                    /// WEEKEND
+                    CheckboxListTile(
+                      value: isWeekendEnabled,
+                      onChanged: (v) => setState(() => isWeekendEnabled = v!),
+                      title: const Text("Weekend"),
+                      controlAffinity: ListTileControlAffinity.leading,
                     ),
 
-                    const SizedBox(height: 20),
+                    if (isWeekendEnabled) ...[
+                      TextField(
+                        controller: weekendPriceCtrl,
+                        keyboardType: TextInputType.number,
+                        decoration: _decoration("Weekend Price"),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: weekendDiscountCtrl,
+                              keyboardType: TextInputType.number,
+                              decoration: _decoration("Weekend Discount"),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          DropdownButton<String>(
+                            value: weekendDiscountType,
+                            onChanged:
+                                (v) => setState(() => weekendDiscountType = v!),
+                            items:
+                                discountTypes
+                                    .map(
+                                      (e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Text(e),
+                                      ),
+                                    )
+                                    .toList(),
+                          ),
+                        ],
+                      ),
+                    ],
 
-                    /// ADD BUTTON
+                    const SizedBox(height: 24),
+
+                    /// SAVE
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: const Text(
+                          "Save",
+                          style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () {
-                          /// VALIDATIONS
                           if (parentId == null || childId == null) {
                             ToastificationShowError.showToast(
                               context: context,
@@ -247,84 +271,73 @@ void openAddServiceBottomSheet(
                             return;
                           }
 
-                          if (priceCtrl.text.isEmpty) {
+                          if (!isWeekdayEnabled && !isWeekendEnabled) {
                             ToastificationShowError.showToast(
                               context: context,
-                              description: "Enter base price",
+                              description: "Select at least one service type",
                             );
                             return;
                           }
 
-                          final basePrice =
-                              double.tryParse(priceCtrl.text) ?? 0;
+                          try {
+                            final parent = parentList.firstWhere(
+                              (p) => p['_id'] == parentId,
+                            );
+                            final child = childList.firstWhere(
+                              (c) => c['_id'] == childId,
+                            );
 
-                          if (basePrice <= 0) {
+                            addServiceProvider.addOrUpdateService(
+                              parent: parent['name'],
+                              child: child['name'],
+                              serviceId: child['_id'],
+                              parentId: parentId,
+                              weekdayPrice: weekdayPriceCtrl.text,
+                              weekendPrice: weekendPriceCtrl.text,
+                              finalWeekdayPrice:
+                                  isWeekdayEnabled
+                                      ? applyDiscount(
+                                        price: double.parse(
+                                          weekdayPriceCtrl.text,
+                                        ),
+                                        discount:
+                                            double.tryParse(
+                                              weekdayDiscountCtrl.text,
+                                            ) ??
+                                            0,
+                                        type: weekdayDiscountType,
+                                      ).toStringAsFixed(2)
+                                      : "0",
+                              finalWeekendPrice:
+                                  isWeekendEnabled
+                                      ? applyDiscount(
+                                        price: double.parse(
+                                          weekendPriceCtrl.text,
+                                        ),
+                                        discount:
+                                            double.tryParse(
+                                              weekendDiscountCtrl.text,
+                                            ) ??
+                                            0,
+                                        type: weekendDiscountType,
+                                      ).toStringAsFixed(2)
+                                      : "0",
+                              weekdayDiscount: weekdayDiscountCtrl.text,
+                              weekendDiscount: weekendDiscountCtrl.text,
+                              weekdayDiscountType: weekdayDiscountType,
+                              weekendDiscountType: weekendDiscountType,
+                            );
+
+                            Navigator.pop(context);
+                          } catch (e) {
                             ToastificationShowError.showToast(
                               context: context,
-                              description: "Price must be greater than 0",
+                              description: e.toString(),
                             );
-                            return;
                           }
-
-                          double finalPrice = basePrice;
-
-                          if (discountCtrl.text.isNotEmpty) {
-                            final discount =
-                                double.tryParse(discountCtrl.text) ?? 0;
-
-                            if (discountType == "Percentage") {
-                              if (discount > 99) {
-                                ToastificationShowError.showToast(
-                                  context: context,
-                                  description:
-                                      "Percentage discount must be 99 or less",
-                                );
-                                return;
-                              }
-                              finalPrice =
-                                  basePrice - (basePrice * discount / 100);
-                            } else {
-                              if (discount >= basePrice) {
-                                ToastificationShowError.showToast(
-                                  context: context,
-                                  description:
-                                      "Discount amount must be less than price",
-                                );
-                                return;
-                              }
-                              finalPrice = basePrice - discount;
-                            }
-                          }
-
-                          final parent = parentList.firstWhere(
-                            (p) => p['_id'] == parentId,
-                          );
-                          final child = childList.firstWhere(
-                            (c) => c['_id'] == childId,
-                          );
-
-                          addServiceProvider.addOrUpdateService(
-                            parent: parent['name'],
-                            child: child['name'],
-                            price: basePrice.toString(),
-                            discount: discountCtrl.text,
-                            discountType: discountType,
-                            finalPrice: finalPrice.toStringAsFixed(2),
-                            serviceType: selectedServiceType,
-                            serviceId: child['_id'],
-                            parentId: parentId,
-                          );
-
-                          Navigator.pop(context);
                         },
-                        child: const Text(
-                          "+ Add",
-                          style: TextStyle(color: Colors.white),
-                        ),
                       ),
                     ),
-
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),

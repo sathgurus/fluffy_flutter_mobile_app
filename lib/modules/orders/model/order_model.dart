@@ -1,9 +1,11 @@
+enum BookingStatus { Upcoming, Completed, Cancelled }
+
 class Booking {
   final String clientName;
   final String service;
   final String petDetails;
-  final String date;
-  final String status;
+  final String date; // yyyy-MM-dd
+  final BookingStatus status;
   final double price;
   final String? duration;
 
@@ -17,13 +19,12 @@ class Booking {
     this.duration,
   });
 
-  // ✅ Factory to auto-assign duration
   factory Booking.withServiceDuration({
     required String clientName,
     required String service,
     required String petDetails,
     required String date,
-    required String status,
+    required BookingStatus status,
     required double price,
   }) {
     return Booking(

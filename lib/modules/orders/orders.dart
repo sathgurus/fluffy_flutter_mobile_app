@@ -1,7 +1,21 @@
+import 'package:fluffy/core/commonWidget/ClientFilter.dart';
 import 'package:fluffy/modules/orders/model/order_model.dart';
 import 'package:fluffy/modules/shared/app_theme/app_colors.dart';
 import 'package:fluffy/modules/shared/appbar_widget.dart';
 import 'package:flutter/material.dart';
+
+BookingStatus? getBookingStatus(String status) {
+  switch (status) {
+    case "Upcoming":
+      return BookingStatus.Upcoming;
+    case "Completed":
+      return BookingStatus.Completed;
+    case "Cancelled":
+      return BookingStatus.Cancelled;
+    default:
+      return null;
+  }
+}
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -19,7 +33,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Grooming",
       petDetails: "Golden Retriever",
       date: "12 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 500,
     ),
     Booking(
@@ -27,7 +41,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Boarding",
       petDetails: "Beagle",
       date: "10 Dec 2025",
-      status: "Completed",
+      status: BookingStatus.Completed,
       price: 700,
     ),
     Booking(
@@ -35,7 +49,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Training",
       petDetails: "German Shepherd",
       date: "15 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 800,
     ),
     Booking(
@@ -43,7 +57,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Breeding",
       petDetails: "Shih Tzu",
       date: "08 Dec 2025",
-      status: "Cancelled",
+      status: BookingStatus.Cancelled,
       price: 0,
     ),
     Booking(
@@ -51,7 +65,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Grooming",
       petDetails: "Pug",
       date: "14 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 500,
     ),
     Booking(
@@ -59,7 +73,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Boarding",
       petDetails: "Persian Cat",
       date: "11 Dec 2025",
-      status: "Completed",
+      status: BookingStatus.Completed,
       price: 700,
     ),
     Booking(
@@ -67,7 +81,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Training",
       petDetails: "Indie Dog",
       date: "18 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 800,
     ),
     Booking(
@@ -75,7 +89,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Grooming",
       petDetails: "Rottweiler",
       date: "20 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 500,
     ),
     Booking(
@@ -83,7 +97,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Boarding",
       petDetails: "Maine Coon",
       date: "22 Dec 2025",
-      status: "Completed",
+      status: BookingStatus.Completed,
       price: 700,
     ),
     Booking(
@@ -91,7 +105,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Breeding",
       petDetails: "Labrador",
       date: "13 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 0,
     ),
     Booking(
@@ -99,7 +113,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Grooming",
       petDetails: "Beagle",
       date: "09 Dec 2025",
-      status: "Cancelled",
+      status: BookingStatus.Cancelled,
       price: 0,
     ),
     Booking(
@@ -107,7 +121,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Training",
       petDetails: "German Shepherd",
       date: "16 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 800,
     ),
     Booking(
@@ -115,7 +129,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Boarding",
       petDetails: "Persian Cat",
       date: "17 Dec 2025",
-      status: "Completed",
+      status: BookingStatus.Completed,
       price: 700,
     ),
     Booking(
@@ -123,7 +137,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Grooming",
       petDetails: "Pug",
       date: "19 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 500,
     ),
     Booking(
@@ -131,7 +145,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Training",
       petDetails: "Golden Retriever",
       date: "21 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 800,
     ),
     Booking(
@@ -139,7 +153,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Boarding",
       petDetails: "Shih Tzu",
       date: "23 Dec 2025",
-      status: "Completed",
+      status: BookingStatus.Completed,
       price: 700,
     ),
     Booking(
@@ -147,7 +161,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Breeding",
       petDetails: "Maine Coon",
       date: "24 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 0,
     ),
     Booking(
@@ -155,7 +169,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Grooming",
       petDetails: "Rottweiler",
       date: "25 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 500,
     ),
     Booking(
@@ -163,7 +177,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Boarding",
       petDetails: "Labrador",
       date: "26 Dec 2025",
-      status: "Completed",
+      status: BookingStatus.Completed,
       price: 700,
     ),
     Booking(
@@ -171,7 +185,7 @@ class _OrderScreenState extends State<OrdersScreen> {
       service: "Training",
       petDetails: "Beagle",
       date: "27 Dec 2025",
-      status: "Upcoming",
+      status: BookingStatus.Upcoming,
       price: 800,
     ),
   ];
@@ -187,22 +201,59 @@ class _OrderScreenState extends State<OrdersScreen> {
     });
   }
 
+  String selectedDateFilter = "All";
+  DateTimeRange? selectedDateRange;
+  BookingStatus? selectedStatus;
+
   void _filterBookings(String query) {
-    if (query.isEmpty) {
-      setState(() {
-        filteredBookings = demoBookings;
-      });
-    } else {
-      setState(() {
-        filteredBookings =
-            demoBookings
-                .where(
-                  (b) =>
-                      b.clientName.toLowerCase().contains(query.toLowerCase()),
-                )
-                .toList();
-      });
-    }
+    setState(() {
+      filteredBookings =
+          demoBookings.where((b) {
+            final matchesSearch = b.clientName.toLowerCase().contains(
+              query.toLowerCase(),
+            );
+
+            final matchesStatus =
+                selectedStatus == null || b.status == selectedStatus;
+
+            DateTime bookingDate = DateTime.parse(b.date);
+            bool matchesDate = true;
+            if (selectedDateFilter != "All") {
+              if (selectedDateFilter == "Today") {
+                matchesDate =
+                    bookingDate.day == DateTime.now().day &&
+                    bookingDate.month == DateTime.now().month &&
+                    bookingDate.year == DateTime.now().year;
+              } else if (selectedDateFilter == "This Week") {
+                final now = DateTime.now();
+                final startOfWeek = now.subtract(
+                  Duration(days: now.weekday - 1),
+                );
+                final endOfWeek = startOfWeek.add(const Duration(days: 6));
+                matchesDate =
+                    bookingDate.isAfter(
+                      startOfWeek.subtract(const Duration(days: 1)),
+                    ) &&
+                    bookingDate.isBefore(
+                      endOfWeek.add(const Duration(days: 1)),
+                    );
+              } else if (selectedDateFilter == "Custom" &&
+                  selectedDateRange != null) {
+                matchesDate =
+                    bookingDate.isAfter(
+                      selectedDateRange!.start.subtract(
+                        const Duration(days: 1),
+                      ),
+                    ) &&
+                    bookingDate.isBefore(
+                      selectedDateRange!.end.add(const Duration(days: 1)),
+                    );
+              }
+            }
+
+            return matchesSearch && matchesStatus && matchesDate;
+          }).toList();
+    });
   }
 
   @override
@@ -211,16 +262,14 @@ class _OrderScreenState extends State<OrdersScreen> {
     super.dispose();
   }
 
-  Color _getStatusColor(String status) {
+  Color _getStatusColor(BookingStatus status) {
     switch (status) {
-      case "Upcoming":
+      case BookingStatus.Upcoming:
         return Colors.blue;
-      case "Completed":
+      case BookingStatus.Completed:
         return Colors.green;
-      case "Cancelled":
+      case BookingStatus.Cancelled:
         return Colors.red;
-      default:
-        return Colors.grey;
     }
   }
 
@@ -266,7 +315,18 @@ class _OrderScreenState extends State<OrdersScreen> {
               ),
             ),
             const SizedBox(height: 12),
-
+            CommonFilterWidget<BookingStatus>(
+              statusOptions: BookingStatus.values,
+              statusLabel: (status) => status.name.toUpperCase(),
+              onFilterChanged: (dateFilter, range, status) {
+                setState(() {
+                  selectedDateFilter = dateFilter;
+                  selectedDateRange = range;
+                  selectedStatus = status;
+                  _filterBookings(_searchController.text);
+                });
+              },
+            ),
             // Booking List
             Expanded(
               child:
@@ -328,10 +388,7 @@ class _OrderScreenState extends State<OrdersScreen> {
                                   const SizedBox(height: 4),
                                   Text(
                                     booking.clientName,
-                                    style: const TextStyle(
-                                      //color: Colors.grey,
-                                      fontSize: 12,
-                                    ),
+                                    style: const TextStyle(fontSize: 12),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
@@ -359,7 +416,7 @@ class _OrderScreenState extends State<OrdersScreen> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
-                                  booking.status,
+                                  booking.status.name,
                                   style: TextStyle(
                                     color: _getStatusColor(booking.status),
                                     fontWeight: FontWeight.bold,
@@ -367,9 +424,6 @@ class _OrderScreenState extends State<OrdersScreen> {
                                   ),
                                 ),
                               ),
-                              onTap: () {
-                                // Navigate to booking details
-                              },
                             ),
                           );
                         },

@@ -14,37 +14,58 @@ class AddServiceProvider with ChangeNotifier {
   void addOrUpdateService({
     required String parent, // category name
     required String child, // service name
-    required String price, // base price
-    String? discount,
-    String discountType = "",
-    required String finalPrice,
-    required String serviceType,
     required String serviceId,
     String? parentId,
+
+    String weekdayPrice = "0",
+    String weekendPrice = "0",
+
+    /// FINAL PRICES
+    String finalWeekdayPrice = "0",
+    String finalWeekendPrice = "0",
+
+    /// WEEKDAY DISCOUNT
+    String weekdayDiscount = "0",
+    String weekdayDiscountType = "",
+
+    /// WEEKEND DISCOUNT
+    String weekendDiscount = "0",
+    String weekendDiscountType = "",
   }) {
-    /// 🔍 Find service index (EDIT MODE)
+    /// 🔍 FIND SERVICE (EDIT MODE)
     int serviceIndex = selectedServices.indexWhere(
       (item) => item['_id'] == serviceId,
     );
 
+    /// 🔹 FLAT SERVICE DATA (API / INTERNAL)
     Map<String, dynamic> serviceData = {
       "_id": serviceId,
       "parentId": parentId,
       "category": parent,
       "service": child,
-      "basePrice": price,
-      "discount": (discount ?? "").isEmpty ? "0" : discount,
-      "discountType": (discount ?? "").isEmpty ? "" : discountType,
-      "price": finalPrice,
-      "serviceType": serviceType,
+
+      "weekdayPrice": weekdayPrice,
+      "weekendPrice": weekendPrice,
+
+      "finalWeekdayPrice": finalWeekdayPrice,
+      "finalWeekendPrice": finalWeekendPrice,
+
+      "weekdayDiscount": weekdayDiscount,
+      "weekdayDiscountType": weekdayDiscountType,
+
+      "weekendDiscount": weekendDiscount,
+      "weekendDiscountType": weekendDiscountType,
     };
 
     if (serviceIndex != -1) {
+      /// UPDATE
       selectedServices[serviceIndex] = serviceData;
     } else {
+      /// ADD
       selectedServices.add(serviceData);
     }
 
+    /// 🔹 GROUPED STRUCTURE (CATEGORY → SERVICES)
     int categoryIndex = finalSelectedServices.indexWhere(
       (item) => item['name'] == parent,
     );
@@ -52,11 +73,18 @@ class AddServiceProvider with ChangeNotifier {
     Map<String, dynamic> childService = {
       "serviceId": serviceId,
       "name": child,
-      "finalPrice": finalPrice,
-      "price": price,
-      "discount": discount ?? "0",
-      "discountType": discountType,
-      "serviceType": serviceType,
+
+      "weekdayPrice": weekdayPrice,
+      "weekendPrice": weekendPrice,
+
+      "finalWeekdayPrice": finalWeekdayPrice,
+      "finalWeekendPrice": finalWeekendPrice,
+
+      "weekdayDiscount": weekdayDiscount,
+      "weekdayDiscountType": weekdayDiscountType,
+
+      "weekendDiscount": weekendDiscount,
+      "weekendDiscountType": weekendDiscountType,
     };
 
     if (categoryIndex != -1) {
